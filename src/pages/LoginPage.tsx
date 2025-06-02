@@ -6,6 +6,7 @@ import { Mail, Lock } from 'lucide-react';
 import { authApi, LoginData } from '../lib/api';
 import MainLayout from '../components/layout/MainLayout';
 import Button from '../components/ui/Button';
+import { toast } from 'react-toastify';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +15,11 @@ const LoginPage: React.FC = () => {
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
+      // Save token to localStorage
+      console.log('Login successful:', data.data.token);
+      localStorage.setItem('token', data.data.token);
+      toast.success('Đăng nhập thành công!');
+      // Redirect to home page or dashboard
       navigate('/');
     },
   });
@@ -123,7 +128,7 @@ const LoginPage: React.FC = () => {
                 fullWidth
                 size="lg"
                 disabled={loginMutation.isPending}
-                className="relative"
+                className="relative bg-white text-black hover:bg-[#0077B6] hover:text-white focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 {loginMutation.isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
               </Button>

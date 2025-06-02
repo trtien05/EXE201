@@ -1,17 +1,18 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import HospitalDetailPage from './pages/HospitalDetailPage';
-import DoctorDetailPage from './pages/DoctorDetailPage';
-import ServiceDetailPage from './pages/ServiceDetailPage';
-import BookingPage from './pages/BookingPage';
-import HospitalsPage from './pages/HospitalsPage';
-import DoctorsPage from './pages/DoctorsPage';
-import ServicesPage from './pages/ServicesPage';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import HospitalDetailPage from "./pages/HospitalDetailPage";
+import DoctorDetailPage from "./pages/DoctorDetailPage";
+import ServiceDetailPage from "./pages/ServiceDetailPage";
+import BookingPage from "./pages/BookingPage";
+import HospitalsPage from "./pages/HospitalsPage";
+import DoctorsPage from "./pages/DoctorsPage";
+import ServicesPage from "./pages/ServicesPage";
+import { ToastContainer } from "react-toastify";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +41,7 @@ function App() {
         </Routes>
       </Router>
       <ReactQueryDevtools initialIsOpen={false} />
+      <ToastContainer />
     </QueryClientProvider>
   );
 }

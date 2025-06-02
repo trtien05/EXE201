@@ -6,6 +6,7 @@ import { Mail, Lock, User } from "lucide-react";
 import { authApi, RegisterData } from "../lib/api";
 import MainLayout from "../components/layout/MainLayout";
 import Button from "../components/ui/Button";
+import { toast } from "react-toastify";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const RegisterPage: React.FC = () => {
   const registerMutation = useMutation({
     mutationFn: authApi.register,
     onSuccess: () => {
+      toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
       navigate("/login");
     },
   });
@@ -41,16 +43,16 @@ const RegisterPage: React.FC = () => {
         }}
       >
         {" "}
-        <div className="max-w-md w-full space-y-8">
+        <div className="max-w-md w-full space-y-8 p-10 bg-[#0096C7] rounded-lg shadow-md">
           <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
               Đăng ký tài khoản
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
+            <p className="mt-2 text-center text-sm text-white">
               Hoặc{" "}
               <Link
                 to="/login"
-                className="font-medium text-[#0077B6] hover:text-teal-500"
+                className="font-medium text-white hover:text-[#90E0EF]"
               >
                 đăng nhập nếu đã có tài khoản
               </Link>
@@ -62,7 +64,7 @@ const RegisterPage: React.FC = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Email
                 </label>
@@ -157,7 +159,7 @@ const RegisterPage: React.FC = () => {
                 fullWidth
                 size="lg"
                 disabled={registerMutation.isPending}
-                className="relative"
+                className="relative bg-white text-black hover:bg-[#0077B6] hover:text-white focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 {registerMutation.isPending ? "Đang đăng ký..." : "Đăng ký"}
               </Button>
