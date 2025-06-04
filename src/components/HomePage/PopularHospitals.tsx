@@ -14,7 +14,7 @@ const PopularHospitals: React.FC = () => {
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
               Bệnh viện nổi bật
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 max-w-md">
+            <p className="text-sm sm:text-base text-gray-600 max-w-lg">
               Các bệnh viện và phòng khám hàng đầu với cơ sở vật chất hiện đại
             </p>
           </div>

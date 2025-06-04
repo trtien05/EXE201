@@ -43,7 +43,7 @@ const RegisterPage: React.FC = () => {
         }}
       >
         {" "}
-        <div className="max-w-md w-full space-y-8 p-10 bg-[#0096C7] rounded-lg shadow-md">
+        <div className="max-w-md w-full space-y-8 p-10 bg-[#3abbe6] rounded-lg shadow-md">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
               Đăng ký tài khoản
@@ -159,7 +159,7 @@ const RegisterPage: React.FC = () => {
                 fullWidth
                 size="lg"
                 disabled={registerMutation.isPending}
-                className="relative bg-white text-black hover:bg-[#0077B6] hover:text-white focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                className="relative "
               >
                 {registerMutation.isPending ? "Đang đăng ký..." : "Đăng ký"}
               </Button>

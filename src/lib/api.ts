@@ -24,6 +24,61 @@ export interface RegisterData extends LoginData {
   confirmPassword: string;
 }
 
+export interface Doctor {
+  doctorId: string;
+  doctorAvatar: string;
+  doctorName: string;
+  doctorDescription: string;
+  doctorPrice: number;
+  hospitalId: string;
+  hospitalName: string;
+  educations: Education[];
+  workExperiences: WorkExperience[];
+}
+
+export interface Education {
+  eduId: string;
+  collegeName: string;
+  description: string;
+  issuedBy: string;
+  issuedYear: number;
+  doctorId: string;
+  doctorName: string;
+}
+
+export interface WorkExperience {
+  wexId: string;
+  hospitalName: string;
+  jobTitle: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  doctorId: string;
+  doctorName: string;
+}
+
+export interface DoctorsResponse {
+  flag: boolean;
+  code: number;
+  message: string;
+  data: {
+    content: Doctor[];
+    page: {
+      size: number;
+      number: number;
+      totalPages: number;
+      totalElements: number;
+    };
+  };
+}
+
+export interface DoctorDetailResponse {
+  flag: boolean;
+  code: number;
+  message: string;
+  data: Doctor;
+}
+
 export const authApi = {
   login: async (data: LoginData) => {
     const response = await api.post('/auth/login', data);
@@ -31,6 +86,17 @@ export const authApi = {
   },
   register: async (data: RegisterData) => {
     const response = await api.post('/auth/register', data);
+    return response.data;
+  },
+};
+
+export const doctorsApi = {
+  getAllDoctors: async (page: number = 0, size: number = 4): Promise<DoctorsResponse> => {
+    const response = await api.get(`/doctors?page=${page}&size=${size}`);
+    return response.data;
+  },
+  getDoctorById: async (doctorId: string): Promise<DoctorDetailResponse> => {
+    const response = await api.get(`/doctors/${doctorId}`);
     return response.data;
   },
 };
