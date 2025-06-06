@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Twitter, Instagram } from 'lucide-react';
+import Logo from '../ui/Logo';
 
 const Footer: React.FC = () => {
   return (
@@ -9,7 +10,14 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Company Info */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Sencare</h3>
+            <div className="mb-3 sm:mb-4">
+              <Logo 
+                className="text-white" 
+                width={40} 
+                height={40} 
+                showText={true}
+              />
+            </div>
             <p className="text-gray-400 text-sm sm:text-base mb-3 sm:mb-4">
               Nền tảng đặt lịch khám bệnh trực tuyến hàng đầu Việt Nam, kết nối bệnh nhân với các bác sĩ và cơ sở y tế uy tín.
             </p>
@@ -50,11 +58,11 @@ const Footer: React.FC = () => {
                   Dịch vụ y tế
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/departments" className="text-gray-400 hover:text-white transition-colors duration-200 text-sm sm:text-base">
                   Chuyên khoa
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 

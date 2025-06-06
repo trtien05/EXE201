@@ -79,6 +79,47 @@ export interface DoctorDetailResponse {
   data: Doctor;
 }
 
+export interface Hospital {
+  hospitalId: string;
+  hospitalAvatar: string;
+  hospitalName: string;
+  hospitalDescription: string;
+  hospitalPhone: string;
+  userId: string | null;
+  doctors: Doctor[];
+  hospitalSpecs: HospitalSpec[];
+}
+
+export interface HospitalSpec {
+  id: string;
+  hospitalId: string;
+  hospitalName: string;
+  specId: string;
+  specName: string;
+}
+
+export interface HospitalsResponse {
+  flag: boolean;
+  code: number;
+  message: string;
+  data: {
+    content: Hospital[];
+    page: {
+      size: number;
+      number: number;
+      totalElements: number;
+      totalPages: number;
+    };
+  };
+}
+
+export interface HospitalDetailResponse {
+  flag: boolean;
+  code: number;
+  message: string;
+  data: Hospital;
+}
+
 export const authApi = {
   login: async (data: LoginData) => {
     const response = await api.post('/auth/login', data);
@@ -97,6 +138,25 @@ export const doctorsApi = {
   },
   getDoctorById: async (doctorId: string): Promise<DoctorDetailResponse> => {
     const response = await api.get(`/doctors/${doctorId}`);
+    return response.data;
+  },
+  searchDoctorsByName: async (name: string, page: number = 0, size: number = 20): Promise<DoctorsResponse> => {
+    const response = await api.get(`/doctors/search-name?name=${encodeURIComponent(name)}&page=${page}&size=${size}`);
+    return response.data;
+  },
+};
+
+export const hospitalsApi = {
+  getAllHospitals: async (page: number = 0, size: number = 20): Promise<HospitalsResponse> => {
+    const response = await api.get(`/hospitals?page=${page}&size=${size}`);
+    return response.data;
+  },
+  getHospitalById: async (hospitalId: string): Promise<HospitalDetailResponse> => {
+    const response = await api.get(`/hospitals/${hospitalId}`);
+    return response.data;
+  },
+  searchHospitalsByName: async (name: string, page: number = 0, size: number = 20): Promise<HospitalsResponse> => {
+    const response = await api.get(`/hospitals/search-name?name=${encodeURIComponent(name)}&page=${page}&size=${size}`);
     return response.data;
   },
 };

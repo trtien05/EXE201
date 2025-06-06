@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Menu, X, User, LogOut, Settings } from 'lucide-react';
+import Logo from '../ui/Logo';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -41,7 +42,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-52">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
-            <div className="text-[#0077B6] font-bold text-xl sm:text-2xl">Sencare</div>
+            <Logo width={isScrolled ? 32 : 40} height={isScrolled ? 32 : 40} />
           </Link>
 
           {/* Desktop Navigation */}
@@ -50,7 +51,7 @@ const Header: React.FC = () => {
             <Link to="/hospitals" className="text-gray-700 hover:text-[#0077B6] font-medium">Bệnh viện</Link>
             <Link to="/doctors" className="text-gray-700 hover:text-[#0077B6] font-medium">Bác sĩ</Link>
             <Link to="/services" className="text-gray-700 hover:text-[#0077B6] font-medium">Dịch vụ</Link>
-            <Link to="/departments" className="text-gray-700 hover:text-[#0077B6] font-medium">Chuyên khoa</Link>
+            {/* <Link to="/departments" className="text-gray-700 hover:text-[#0077B6] font-medium">Chuyên khoa</Link> */}
           </nav>
 
           {/* Search and Login buttons */}
@@ -162,13 +163,13 @@ const Header: React.FC = () => {
             >
               Dịch vụ
             </Link>
-            <Link 
+            {/* <Link 
               to="/departments" 
               className="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-[#0077B6] rounded-md transition-colors duration-200"
               onClick={() => setMobileMenuOpen(false)}
             >
               Chuyên khoa
-            </Link>
+            </Link> */}
             
             {/* Mobile search and login */}
             <div className="pt-2 border-t border-gray-200 mt-2">

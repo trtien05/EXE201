@@ -16,7 +16,13 @@ const SearchSection: React.FC = () => {
     if (searchQuery) searchParams.set('query', searchQuery);
     if (location) searchParams.set('location', location);
     
-    navigate(`/${searchType}s?${searchParams.toString()}`);
+    // Navigate to appropriate page with search parameters
+    if (searchType === 'service') {
+      // Handle services search differently or redirect to hospitals
+      navigate(`/hospitals?${searchParams.toString()}`);
+    } else {
+      navigate(`/${searchType}s?${searchParams.toString()}`);
+    }
   };
 
   return (
