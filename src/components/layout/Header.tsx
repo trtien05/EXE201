@@ -158,14 +158,14 @@ const Header: React.FC = () => {
                       Hồ sơ cá nhân
                     </Link>
 
-                    <Link
+                    {/* <Link
                       to="/settings"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setShowUserMenu(false)}
                     >
                       <Settings className="h-4 w-4 mr-3" />
                       Cài đặt
-                    </Link>
+                    </Link> */}
 
                     <button
                       onClick={handleLogout}

@@ -188,21 +188,21 @@ export const doctors: Doctor[] = [
     availableTimeSlots: [
       {
         id: "ts1",
-        date: "2025-08-20",
+        date: "2025-06-16",
         startTime: "07:30",
         endTime: "08:00",
         isAvailable: true,
       },
       {
         id: "ts2",
-        date: "2025-08-20",
+        date: "2025-06-16",
         startTime: "08:00",
         endTime: "08:30",
         isAvailable: true,
       },
       {
         id: "ts3",
-        date: "2025-08-20",
+        date: "2025-06-16",
         startTime: "08:30",
         endTime: "09:00",
         isAvailable: false,

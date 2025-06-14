@@ -34,16 +34,16 @@ import PregnancyWeight from "../components/ToolsPage/PregnancyWeight";
 
 // Mock data for bookings and transactions
 const mockBookings = [
-  {
-    id: "BK1701234567",
-    doctorName: "BS.CKII Phan Thị Hòa",
-    hospitalName: "Bệnh viện Quốc tế Columbia Asia Bình Dương",
-    specialty: "Sản - Phụ khoa",
-    date: "2024-06-16",
-    time: "08:00 - 08:30",
-    status: "confirmed",
-    fee: 290000,
-  },
+  //   {
+  //     id: "BK1701234567",
+  //     doctorName: "BS.CKII Phan Thị Hòa",
+  //     hospitalName: "Bệnh viện Quốc tế Columbia Asia Bình Dương",
+  //     specialty: "Sản - Phụ khoa",
+  //     date: "2024-06-16",
+  //     time: "08:00 - 08:30",
+  //     status: "confirmed",
+  //     fee: 290000,
+  //   },
   {
     id: "BK1701234568",
     doctorName: "TS.BS Trần Lệ Thủy",
@@ -67,16 +67,16 @@ const mockBookings = [
 ];
 
 const mockTransactions = [
-  {
-    id: "TXN001",
-    bookingId: "BK1701234567",
-    amount: 290000,
-    type: "payment",
-    method: "MoMo",
-    date: "2024-06-16",
-    status: "completed",
-    description: "Thanh toán phí khám bệnh",
-  },
+  //   {
+  //     id: "TXN001",
+  //     bookingId: "BK1701234567",
+  //     amount: 290000,
+  //     type: "payment",
+  //     method: "MoMo",
+  //     date: "2024-06-16",
+  //     status: "completed",
+  //     description: "Thanh toán phí khám bệnh",
+  //   },
   {
     id: "TXN002",
     bookingId: "BK1701234569",

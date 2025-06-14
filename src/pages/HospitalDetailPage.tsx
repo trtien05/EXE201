@@ -7,9 +7,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import HospitalOverview from "../components/HospitalDetail/HospitalOverview";
 import HospitalServices from "../components/HospitalDetail/HospitalServices";
-import HospitalDoctors from "../components/HospitalDetail/HospitalDoctors";
 import HospitalReviews from "../components/HospitalDetail/HospitalReviews";
-import BookingSection from "../components/HospitalDetail/BookingSection";
 import { hospitals } from "../data/mockData";
 
 const HospitalDetailPage: React.FC = () => {
