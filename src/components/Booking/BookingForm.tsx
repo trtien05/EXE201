@@ -1,39 +1,100 @@
-import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { User, MapPin, Calendar } from 'lucide-react';
-import Button from '../ui/Button';
-import { doctors, hospitals } from '../../data/mockData';
+import React, { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { User, MapPin, Calendar, Clock } from "lucide-react";
+import Button from "../ui/Button";
+import { doctors, hospitals } from "../../data/mockData";
+import { toast } from "react-toastify";
 
 const BookingForm: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const doctorId = searchParams.get('doctorId');
-  const time = searchParams.get('time');
+  const navigate = useNavigate();
+  const doctorId = searchParams.get("doctorId");
+  const preSelectedTime = searchParams.get("time");
 
-  const doctor = doctorId ? doctors.find(d => d.id === doctorId) : null;
-  const hospital = doctor ? hospitals.find(h => h.id === doctor.hospitalId) : null;
+  const doctor = doctorId ? doctors.find((d) => d.id === doctorId) : null;
+  const hospital = doctor
+    ? hospitals.find((h) => h.id === doctor.hospitalId)
+    : null;
 
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>(
+    preSelectedTime || ""
+  );
   const [formData, setFormData] = useState({
-    bookingFor: 'self',
-    patientName: '',
-    dateOfBirth: '',
-    gender: 'male',
-    phone: '',
-    email: '',
-    zalo: '',
-    address: '',
+    bookingFor: "self",
+    patientName: "",
+    dateOfBirth: "",
+    gender: "male",
+    phone: "",
+    email: "",
+    zalo: "",
+    address: "",
     isNewPatient: true,
-    reason: '',
-    paymentMethod: 'cod'
+    reason: "",
+    paymentMethod: "cod",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleTimeSlotSelect = (timeSlotId: string) => {
+    setSelectedTimeSlot(timeSlotId);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Booking submitted:', formData);
+
+    if (!selectedTimeSlot) {
+      toast.warning("Vui lòng chọn khung giờ khám");
+      return;
+    }
+
+    const selectedSlot = doctor?.availableTimeSlots.find(
+      (slot) => slot.id === selectedTimeSlot
+    );
+
+    const bookingData = {
+      ...formData,
+      doctorId: doctor?.id,
+      doctorName: doctor?.name,
+      hospitalId: hospital?.id,
+      hospitalName: hospital?.name,
+      timeSlot: selectedSlot,
+      consultationFee: doctor?.consultationFee,
+      bookingDate: new Date().toISOString(),
+    };
+
+    console.log("Booking submitted:", bookingData);
+
+    // Create booking ID and navigate to payment
+    const bookingId = `BK${Date.now()}`;
+    const params = new URLSearchParams({
+      bookingId,
+      amount: doctor?.consultationFee?.toString() || "0",
+      doctorName: doctor?.name || "",
+      hospitalName: hospital?.name || "",
+    });
+
+    toast.success("Đặt lịch thành công! Chuyển đến trang thanh toán...");
+    navigate(`/checkout-payment?${params.toString()}`);
+  };
+
+  const formatTimeSlot = (timeSlot: any) => {
+    return `${timeSlot.startTime} - ${timeSlot.endTime}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   return (
@@ -46,7 +107,7 @@ const BookingForm: React.FC = () => {
               type="radio"
               name="bookingFor"
               value="self"
-              checked={formData.bookingFor === 'self'}
+              checked={formData.bookingFor === "self"}
               onChange={handleInputChange}
               className="form-radio text-blue-600"
             />
@@ -57,7 +118,7 @@ const BookingForm: React.FC = () => {
               type="radio"
               name="bookingFor"
               value="other"
-              checked={formData.bookingFor === 'other'}
+              checked={formData.bookingFor === "other"}
               onChange={handleInputChange}
               className="form-radio text-blue-600"
             />
@@ -79,12 +140,8 @@ const BookingForm: React.FC = () => {
               <p className="text-gray-600">{doctor.specialty}</p>
             </div>
           </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <Calendar className="w-5 h-5 text-gray-500 mr-2" />
-              <span>Lịch hẹn: {time}</span>
-            </div>
+
+          <div className="space-y-2 mb-4">
             <div className="flex items-center">
               <MapPin className="w-5 h-5 text-gray-500 mr-2" />
               <span>{hospital.name}</span>
@@ -93,14 +150,62 @@ const BookingForm: React.FC = () => {
             <div className="flex items-center">
               <span className="font-medium">Mức phí: </span>
               <span className="text-red-600 ml-2">
-                {new Intl.NumberFormat('vi-VN').format(doctor.consultationFee)}đ
+                {new Intl.NumberFormat("vi-VN").format(doctor.consultationFee)}đ
               </span>
             </div>
+          </div>
+
+          {/* Time Slot Selection */}
+          <div className="border-t pt-4">
+            <h4 className="font-medium mb-3 flex items-center">
+              <Clock className="w-5 h-5 mr-2" />
+              Chọn khung giờ khám
+            </h4>
+            {doctor.availableTimeSlots.length > 0 ? (
+              <div className="space-y-3">
+                {/* Group time slots by date */}
+                {Array.from(
+                  new Set(doctor.availableTimeSlots.map((slot) => slot.date))
+                ).map((date) => (
+                  <div key={date}>
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      {/* {formatDate(date)} */}
+                    </p>
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                      {doctor.availableTimeSlots
+                        .filter((slot) => slot.date === date)
+                        .map((timeSlot) => (
+                          <button
+                            key={timeSlot.id}
+                            type="button"
+                            onClick={() => handleTimeSlotSelect(timeSlot.id)}
+                            disabled={!timeSlot.isAvailable}
+                            className={`p-2 text-sm rounded border transition-colors ${
+                              selectedTimeSlot === timeSlot.id
+                                ? "bg-blue-600 text-white border-blue-600"
+                                : timeSlot.isAvailable
+                                ? "bg-white text-gray-700 border-gray-300 hover:border-blue-600"
+                                : "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
+                            }`}
+                          >
+                            {formatTimeSlot(timeSlot)}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">Không có khung giờ nào khả dụng</p>
+            )}
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-lg shadow-md p-6"
+      >
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -130,7 +235,7 @@ const BookingForm: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Giới tính
@@ -197,11 +302,11 @@ const BookingForm: React.FC = () => {
                   type="radio"
                   name="paymentMethod"
                   value="cod"
-                  checked={formData.paymentMethod === 'cod'}
+                  checked={formData.paymentMethod === "cod"}
                   onChange={handleInputChange}
                   className="form-radio text-blue-600"
                 />
-                <span className="ml-2">Thanh toán bằng tiền mặt (COD)</span>
+                <span className="ml-2">Thanh toán chuyển khoản MOMO</span>
               </label>
             </div>
           </div>

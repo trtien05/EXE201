@@ -12,7 +12,9 @@ import BookingPage from "./pages/BookingPage";
 import HospitalsPage from "./pages/HospitalsPage";
 import DoctorsPage from "./pages/DoctorsPage";
 import ServicesPage from "./pages/ServicesPage";
+import CheckoutPaymentPage from "./pages/CheckoutPaymentPage";
 import { ToastContainer } from "react-toastify";
+import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +40,8 @@ function App() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/services/:id" element={<ServiceDetailPage />} />
           <Route path="/booking" element={<BookingPage />} />
+          <Route path="/checkout-payment" element={<CheckoutPaymentPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </Router>
       <ReactQueryDevtools initialIsOpen={false} />

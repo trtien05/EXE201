@@ -1,0 +1,183 @@
+.calculator-container {
+  @apply w-full max-w-2xl mx-auto;
+}
+
+.pregnancy-calculator {
+  @apply space-y-6 relative;
+}
+
+.form-group {
+  @apply space-y-2;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+.input-group {
+  @apply flex items-stretch rounded-lg border border-gray-300 overflow-hidden;
+}
+
+.input-group input {
+  @apply flex-1 px-3 py-2 border-0 outline-none;
+}
+
+.input-group select {
+  @apply px-3 py-2 bg-gray-50 border-l border-gray-300 text-sm font-medium text-gray-700 outline-none;
+}
+
+.height-group {
+  @apply grid grid-cols-2 gap-4;
+}
+
+.height-meters {
+  @apply w-full;
+}
+
+.unit-label {
+  @apply px-3 py-2 bg-gray-50 border-l border-gray-300 text-sm font-medium text-gray-700;
+}
+
+.checkbox-group {
+  @apply flex items-center space-x-3 p-4 bg-green-50 rounded-lg border border-green-200;
+}
+
+.checkbox-group input[type="checkbox"] {
+  @apply h-4 w-4 text-green-600 border-gray-300 rounded;
+}
+
+.checkbox-group label {
+  @apply text-sm font-medium text-gray-700 cursor-pointer;
+}
+
+.conversion-info {
+  @apply bg-blue-50 border border-blue-200 rounded-lg p-3;
+}
+
+.info-text {
+  @apply text-xs text-blue-700 text-center font-medium;
+}
+
+.full-width {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg;
+}
+
+.error-input {
+  @apply border-red-300 bg-red-50;
+}
+
+.error-message {
+  @apply text-sm text-red-600 mt-1;
+}
+
+.submit-button {
+  @apply w-full bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .height-group {
+    @apply grid-cols-1 gap-3;
+  }
+
+  .input-group {
+    @apply flex-col;
+  }
+
+  .input-group select {
+    @apply border-l-0 border-t;
+  }
+
+  .unit-label {
+    @apply border-l-0 border-t;
+  }
+}
+
+/* Custom select arrow */
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Input number spinner removal */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Disabled state */
+.input-group input:disabled {
+  @apply bg-gray-100 text-gray-500 cursor-not-allowed;
+}
+
+.input-group select:disabled {
+  @apply bg-gray-100 text-gray-500 cursor-not-allowed;
+}
+
+/* Animation for form validation */
+.error-input {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* Custom checkbox styling */
+.checkbox-group input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-8.208 8.207-2.75-2.749a.5.5 0 0 0-.708.708l3.104 3.103a.5.5 0 0 0 .708 0L14.562 4.354a.5.5 0 1 0-.708-.708z'/%3e%3c/svg%3e");
+}
+
+/* Loading state */
+.submit-button:disabled {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+.submit-button.loading {
+  @apply relative;
+}
+
+.submit-button.loading::after {
+  content: "";
+  @apply absolute inset-0 rounded-lg;
+  background: rgba(255, 255, 255, 0.2);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Ensure form inputs are disabled during calculation */
+.pregnancy-calculator input:disabled,
+.pregnancy-calculator select:disabled {
+  @apply bg-gray-100 text-gray-500 cursor-not-allowed opacity-60;
+}
+
+/* Loading overlay positioning */
+.pregnancy-calculator .absolute {
+  position: absolute;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

@@ -1,26 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Menu, X, User, LogOut, Settings } from 'lucide-react';
-import Logo from '../ui/Logo';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Search, Menu, X, User, LogOut, Settings } from "lucide-react";
+import Logo from "../ui/Logo";
+import { verifyToken, User as UserType } from "../../data/mockData";
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const checkAuth = () => {
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+
+    if (token && userStr) {
+      const user = verifyToken(token);
+      if (user) {
+        setIsAuthenticated(true);
+        setCurrentUser(user);
+      } else {
+        // Token is invalid, clear storage
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+      }
+    } else {
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+    }
+  };
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+    checkAuth();
+
+    // Listen for auth changes
+    const handleAuthChange = () => {
+      checkAuth();
+    };
+
+    window.addEventListener("auth-change", handleAuthChange);
+    return () => window.removeEventListener("auth-change", handleAuthChange);
   }, []);
 
   const toggleMobileMenu = () => {
@@ -28,15 +59,18 @@ const Header: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
+    setCurrentUser(null);
     setShowUserMenu(false);
+    window.dispatchEvent(new Event("auth-change"));
   };
 
   return (
-    <header 
+    <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-white py-4'
+        isScrolled ? "bg-white shadow-md py-2" : "bg-white py-4"
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-52">
@@ -47,35 +81,74 @@ const Header: React.FC = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-[#0077B6] font-medium">Trang chủ</Link>
-            <Link to="/hospitals" className="text-gray-700 hover:text-[#0077B6] font-medium">Bệnh viện</Link>
-            <Link to="/doctors" className="text-gray-700 hover:text-[#0077B6] font-medium">Bác sĩ</Link>
-            <Link to="/services" className="text-gray-700 hover:text-[#0077B6] font-medium">Dịch vụ</Link>
-            {/* <Link to="/departments" className="text-gray-700 hover:text-[#0077B6] font-medium">Chuyên khoa</Link> */}
+            <Link
+              to="/"
+              className="text-gray-700 hover:text-[#0077B6] font-medium"
+            >
+              Trang chủ
+            </Link>
+            <Link
+              to="/hospitals"
+              className="text-gray-700 hover:text-[#0077B6] font-medium"
+            >
+              Bệnh viện
+            </Link>
+            <Link
+              to="/doctors"
+              className="text-gray-700 hover:text-[#0077B6] font-medium"
+            >
+              Bác sĩ
+            </Link>
+            <Link
+              to="/services"
+              className="text-gray-700 hover:text-[#0077B6] font-medium"
+            >
+              Dịch vụ
+            </Link>
           </nav>
 
           {/* Search and Login buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            <button 
+            <button
               className="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors duration-200"
               aria-label="Search"
             >
               <Search className="h-5 w-5 text-gray-600" />
             </button>
-            
-            {isAuthenticated ? (
+
+            {isAuthenticated && currentUser ? (
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 >
-                  <div className="w-8 h-8 bg-[#0096C7] text-white rounded-full flex items-center justify-center text-sm font-medium">
-                    <User className="h-4 w-4" />
+                  <div className="w-8 h-8 bg-[#0096C7] text-white rounded-full flex items-center justify-center text-sm font-medium overflow-hidden">
+                    {currentUser.avatar ? (
+                      <img
+                        src={currentUser.avatar}
+                        alt={currentUser.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-4 w-4" />
+                    )}
                   </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {currentUser.name}
+                  </span>
                 </button>
 
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900">
+                        {currentUser.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {currentUser.email}
+                      </p>
+                    </div>
+
                     <Link
                       to="/profile"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -84,7 +157,7 @@ const Header: React.FC = () => {
                       <User className="h-4 w-4 mr-3" />
                       Hồ sơ cá nhân
                     </Link>
-                    
+
                     <Link
                       to="/settings"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -93,7 +166,7 @@ const Header: React.FC = () => {
                       <Settings className="h-4 w-4 mr-3" />
                       Cài đặt
                     </Link>
-                    
+
                     <button
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -105,8 +178,8 @@ const Header: React.FC = () => {
                 )}
               </div>
             ) : (
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="px-4 py-2 rounded-md bg-[#0096C7] text-white hover:bg-[#0077B6] transition-colors duration-200"
               >
                 Đăng nhập
@@ -116,7 +189,7 @@ const Header: React.FC = () => {
 
           {/* Mobile menu button */}
           <div className="lg:hidden">
-            <button 
+            <button
               onClick={toggleMobileMenu}
               className="p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-200"
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -135,70 +208,76 @@ const Header: React.FC = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white shadow-lg border-t border-gray-200">
           <div className="px-4 py-2 space-y-1 max-h-screen overflow-y-auto">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-[#0077B6] rounded-md transition-colors duration-200"
               onClick={() => setMobileMenuOpen(false)}
             >
               Trang chủ
             </Link>
-            <Link 
-              to="/hospitals" 
+            <Link
+              to="/hospitals"
               className="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-[#0077B6] rounded-md transition-colors duration-200"
               onClick={() => setMobileMenuOpen(false)}
             >
               Bệnh viện
             </Link>
-            <Link 
-              to="/doctors" 
+            <Link
+              to="/doctors"
               className="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-[#0077B6] rounded-md transition-colors duration-200"
               onClick={() => setMobileMenuOpen(false)}
             >
               Bác sĩ
             </Link>
-            <Link 
-              to="/services" 
+            <Link
+              to="/services"
               className="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-[#0077B6] rounded-md transition-colors duration-200"
               onClick={() => setMobileMenuOpen(false)}
             >
               Dịch vụ
             </Link>
-            {/* <Link 
-              to="/departments" 
-              className="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-[#0077B6] rounded-md transition-colors duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Chuyên khoa
-            </Link> */}
-            
+
             {/* Mobile search and login */}
             <div className="pt-2 border-t border-gray-200 mt-2">
-              <button 
+              <button
                 className="flex items-center w-full py-3 px-4 text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                 aria-label="Search"
               >
                 <Search className="h-5 w-5 mr-3" />
                 Tìm kiếm
               </button>
-              
-              {isAuthenticated ? (
+
+              {isAuthenticated && currentUser ? (
                 <div className="mt-2">
                   <div className="flex items-center py-3 px-4 border-b border-gray-100">
-                    <div className="w-8 h-8 bg-[#0096C7] text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">
-                      <User className="h-4 w-4" />
+                    <div className="w-8 h-8 bg-[#0096C7] text-white rounded-full flex items-center justify-center text-sm font-medium mr-3 overflow-hidden">
+                      {currentUser.avatar ? (
+                        <img
+                          src={currentUser.avatar}
+                          alt={currentUser.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-4 w-4" />
+                      )}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Người dùng</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {currentUser.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {currentUser.email}
+                      </p>
                     </div>
                   </div>
-                  <Link 
-                    to="/profile" 
+                  <Link
+                    to="/profile"
                     className="block py-3 px-4 text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Hồ sơ cá nhân
                   </Link>
-                  <button 
+                  <button
                     onClick={() => {
                       handleLogout();
                       setMobileMenuOpen(false);
@@ -209,8 +288,8 @@ const Header: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <Link 
-                  to="/login" 
+                <Link
+                  to="/login"
                   className="block py-3 px-4 text-white bg-[#0096C7] hover:bg-[#0077B6] rounded-md mt-2 text-center transition-colors duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
