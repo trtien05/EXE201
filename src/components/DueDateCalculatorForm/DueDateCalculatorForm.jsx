@@ -175,7 +175,7 @@ const DueDateCalculatorForm = () => {
         return (
           <>
             <div className="form-group">
-              <label>Date of ultrasound</label>
+              <label>Ngày siêu âm</label>
               <DatePicker
                 className="form-control"
                 value={date}
@@ -185,13 +185,10 @@ const DueDateCalculatorForm = () => {
               />
             </div>
             <div className="form-group">
-              <label>
-                Calculated gestational age on the date that the ultrasound was
-                performed
-              </label>
+              <label>Tuổi thai được tính vào ngày siêu âm</label>
               <div className="gestational-age">
                 <div className="weeks-container">
-                  <label>Weeks</label>
+                  <label>Tuần</label>
                   <Select
                     className="form-control"
                     value={weeks}
@@ -202,7 +199,7 @@ const DueDateCalculatorForm = () => {
                   </Select>
                 </div>
                 <div className="days-container">
-                  <label>Days</label>
+                  <label>Ngày</label>
                   <Select
                     className="form-control"
                     value={days}
@@ -219,7 +216,7 @@ const DueDateCalculatorForm = () => {
       case "I know my due date":
         return (
           <div className="form-group">
-            <label>What&apos;s your due date?</label>
+            <label>Ngày dự sinh của bạn là gì?</label>
             <DatePicker
               className="form-control"
               value={date}
@@ -253,18 +250,18 @@ const DueDateCalculatorForm = () => {
   return (
     <div className="due-date-calculator-form">
       <div className="form-group">
-        <label>Calculation method</label>
+        <label>Phương pháp tính toán</label>
         <Select
           // className="form-control cycle-dropdown"
           style={{ width: "100%" }}
           value={calculationMethod}
           onChange={handleCalculationMethodChange}
         >
-          <Option value="Ultrasound">Ultrasound</Option>
-          <Option value="Last period">Last period</Option>
-          <Option value="Conception date">Conception date</Option>
+          <Option value="Ultrasound">Siêu âm</Option>
+          <Option value="Last period">Kỳ kinh cuối</Option>
+          <Option value="Conception date">Ngày thụ thai</Option>
           <Option value="IVF">IVF</Option>
-          <Option value="I know my due date">I know my due date</Option>
+          <Option value="I know my due date">Tôi biết ngày dự sinh</Option>
         </Select>
       </div>
 
