@@ -21,8 +21,8 @@ const CheckoutPaymentPage: React.FC = () => {
   // Payment information
   const paymentInfo = {
     bankName: "MoMo",
-    accountNumber: "0123456789",
-    accountName: "NGUYEN VAN A",
+    accountNumber: "0949442727",
+    accountName: "Ho Tran Tien",
     transferContent: `Thanh toan lich kham ${bookingId}`,
     qrCode:
       "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MOMO_TRANSFER_INFO",
