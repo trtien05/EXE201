@@ -105,6 +105,12 @@ const Header: React.FC = () => {
             >
               Dịch vụ
             </Link>
+            <Link
+              to="/blog"
+              className="text-gray-700 hover:text-[#0077B6] font-medium"
+            >
+              Blog
+            </Link>
           </nav>
 
           {/* Search and Login buttons */}
@@ -235,6 +241,13 @@ const Header: React.FC = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Dịch vụ
+            </Link>
+            <Link
+              to="/blog"
+              className="block py-3 px-4 text-gray-700 hover:bg-gray-100 hover:text-[#0077B6] rounded-md transition-colors duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Blog
             </Link>
 
             {/* Mobile search and login */}
