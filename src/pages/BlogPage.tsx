@@ -225,7 +225,7 @@ const BlogPage: React.FC = () => {
                   <img
                     src={featuredPost.imageUrl}
                     alt={featuredPost.title}
-                    className="w-full h-80 object-cover"
+                    className="w-full h-[390px] object-cover"
                   />
                 </Link>
                 <div className="p-8">
