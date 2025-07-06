@@ -422,6 +422,53 @@ export const users: User[] = [
 export const blogPosts: BlogPost[] = [
   {
     id: 1,
+    title:
+      "Giới thiệu ứng dụng Sencare – Trợ lý chăm sóc sức khỏe toàn diện cho gia đình",
+    excerpt:
+      "Khám phá Sencare – ứng dụng y tế thông minh tích hợp đặt lịch khám, dịch vụ y tế tại nhà và công cụ AI hỗ trợ chăm sóc sức khỏe mẹ và bé.",
+    content: `
+      <h2>Sencare – Người bạn đồng hành chăm sóc sức khỏe thông minh</h2>
+      <p>Sencare là ứng dụng di động tích hợp các dịch vụ chăm sóc sức khỏe toàn diện, giúp người dùng dễ dàng kết nối với bệnh viện, bác sĩ và các dịch vụ y tế cần thiết. Không chỉ vậy, Sencare còn ứng dụng trí tuệ nhân tạo (AI) để hỗ trợ người dùng theo dõi sức khỏe, đặc biệt là trong giai đoạn mang thai và sau sinh.</p>
+
+      <h3>Đặt lịch khám nhanh chóng và tiện lợi</h3>
+      <ul>
+        <li><strong>Đặt lịch khám bệnh:</strong> Người dùng có thể đặt lịch với các bệnh viện, phòng khám uy tín trên toàn quốc chỉ với vài thao tác.</li>
+        <li><strong>Chọn bác sĩ theo chuyên khoa:</strong> Tìm kiếm bác sĩ phù hợp theo chuyên môn, đánh giá và kinh nghiệm.</li>
+        <li><strong>Dịch vụ y tế tại nhà:</strong> Đặt dịch vụ tiêm chủng, xét nghiệm, khám tại nhà cho người lớn tuổi, phụ nữ mang thai và trẻ nhỏ.</li>
+      </ul>
+
+      <h3>Trợ lý AI hỗ trợ chăm sóc sức khỏe</h3>
+      <ul>
+        <li><strong>Tính chỉ số BMI:</strong> Tự động tính toán chỉ số khối cơ thể (BMI) để theo dõi cân nặng lý tưởng.</li>
+        <li><strong>Công cụ tính chỉ số thai kỳ:</strong> Dự đoán ngày sinh, theo dõi sự phát triển thai nhi theo từng tuần.</li>
+        <li><strong>Lịch tiêm chủng & nhắc nhở:</strong> Theo dõi lịch tiêm của bé và nhận thông báo nhắc nhở kịp thời.</li>
+        <li><strong>Phân tích dữ liệu sức khỏe:</strong> AI hỗ trợ đánh giá tình trạng sức khỏe dựa trên các chỉ số đầu vào.</li>
+      </ul>
+
+      <h3>Giao diện thân thiện, dễ sử dụng</h3>
+      <p>Giao diện Sencare được thiết kế đơn giản, dễ sử dụng cho mọi lứa tuổi, đặc biệt là người cao tuổi và phụ nữ mang thai. Ứng dụng hỗ trợ ngôn ngữ tiếng Việt và tích hợp chatbot chăm sóc sức khỏe 24/7.</p>
+
+      <h3>Lợi ích khi sử dụng Sencare</h3>
+      <ul>
+        <li>Tiết kiệm thời gian và chi phí đi lại</li>
+        <li>Chủ động quản lý và theo dõi tình trạng sức khỏe cá nhân</li>
+        <li>Kết nối nhanh chóng với đội ngũ bác sĩ uy tín</li>
+        <li>Nhận tư vấn sức khỏe kịp thời, chính xác</li>
+      </ul>
+
+      <p><em>Ứng dụng Sencare là giải pháp y tế số hóa hiện đại, giúp mỗi gia đình chủ động hơn trong hành trình chăm sóc sức khỏe. Tải ngay ứng dụng để trải nghiệm!</em></p>
+    `,
+    author: "Thạc sĩ - Bác sĩ Nguyễn Minh Hạnh",
+    date: "2024-12-20",
+    category: "Ứng dụng y tế",
+    tags: ["ứng dụng sức khỏe", "AI y tế", "mẹ và bé", "chăm sóc tại nhà"],
+    imageUrl:
+      "https://scontent.fsgn8-4.fna.fbcdn.net/v/t39.30808-6/504408397_122108031062891673_3862950004951041225_n.png?_nc_cat=108&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=X_YEkRT9lR8Q7kNvwHhvv6h&_nc_oc=AdmTSa1DfEEBTvLBOwZeXNflgVWQlvXf52t0LmYajs_v064tiTiJDoo7SU5whEkhpherU5WL3AQQEh2Usf30UIi6&_nc_zt=23&_nc_ht=scontent.fsgn8-4.fna&_nc_gid=K8kqr_C6Rd7_m9z3W0Vm4w&oh=00_AfRqeY244qHHv-Wk0791hxWf1__3H3umjtJBgYUwsK8GjA&oe=686FCF47",
+    readTime: "4 phút đọc",
+    categoryColor: "bg-blue-100 text-blue-800",
+  },
+  {
+    id: 2,
     title: "Hướng dẫn chăm sóc mẹ và bé sau sinh tháng đầu sau sinh",
     excerpt:
       "Tìm hiểu cách chăm sóc mẹ và bé một cách khoa học trong tháng đầu sau sinh để đảm bảo sức khỏe tốt nhất.",
@@ -465,7 +512,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-pink-100 text-pink-800",
   },
   {
-    id: 2,
+    id: 3,
     title:
       "Chuyên gia giải đáp: Nước trái cây lên men có tốt cho sức khỏe không?",
     excerpt:
@@ -501,7 +548,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-orange-100 text-orange-800",
   },
   {
-    id: 3,
+    id: 4,
     title: "Review 16 loại kem dưỡng ẩm cho bà bầu được nhiều người tin dùng",
     excerpt:
       "Khám phá những sản phẩm kem dưỡng ẩm an toàn và hiệu quả dành riêng cho phụ nữ mang thai.",
@@ -534,7 +581,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-purple-100 text-purple-800",
   },
   {
-    id: 4,
+    id: 5,
     title: "10 thực phẩm tăng cường miễn dịch cho trẻ em trong mùa đông",
     excerpt:
       "Danh sách những thực phẩm giàu dinh dưỡng giúp tăng cường hệ miễn dịch cho trẻ nhỏ.",
@@ -568,7 +615,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-green-100 text-green-800",
   },
   {
-    id: 5,
+    id: 6,
     title:
       "Vắc xin phế cầu cho người lớn và người cao tuổi: Mũi tiêm thiết yếu",
     excerpt:
@@ -600,12 +647,8 @@ export const blogPosts: BlogPost[] = [
     readTime: "10 phút đọc",
     categoryColor: "bg-blue-100 text-blue-800",
   },
-  // Tất cả các mục từ id=6 đến id=30 cũng được xây dựng theo cấu trúc tương tự như trên,
-  // nhưng với nội dung phù hợp với từng tiêu đề. Do giới hạn không gian, mình sẽ cung cấp file đầy đủ nếu bạn muốn.
-
-  // Ví dụ:
   {
-    id: 6,
+    id: 7,
     title: "Bí quyết giữ dáng sau sinh không cần ăn kiêng khắc nghiệt",
     excerpt:
       "Học cách lấy lại vóc dáng sau sinh một cách tự nhiên và an toàn cho sức khỏe.",
@@ -630,7 +673,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-pink-100 text-pink-800",
   },
   {
-    id: 7,
+    id: 8,
     title: "Yoga cho bà bầu: Tư thế an toàn theo từng giai đoạn thai kỳ",
     excerpt:
       "Hướng dẫn chi tiết các tư thế yoga phù hợp và an toàn cho từng giai đoạn mang thai.",
@@ -661,7 +704,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-purple-100 text-purple-800",
   },
   {
-    id: 8,
+    id: 9,
     title: "Thực đơn DASH diet giúp kiểm soát huyết áp hiệu quả",
     excerpt:
       "Khám phá chế độ ăn DASH được các chuyên gia tim mạch khuyến nghị để kiểm soát huyết áp.",
@@ -688,7 +731,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-orange-100 text-orange-800",
   },
   {
-    id: 9,
+    id: 10,
     title: "Cách nhận biết và xử lý sốt ở trẻ em tại nhà",
     excerpt:
       "Hướng dẫn cha mẹ cách nhận biết mức độ sốt và các biện pháp xử lý ban đầu an toàn.",
@@ -717,7 +760,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-green-100 text-green-800",
   },
   {
-    id: 10,
+    id: 11,
     title: "Tác dụng phụ của thuốc kháng sinh và cách sử dụng đúng",
     excerpt:
       "Tìm hiểu về tác dụng phụ của kháng sinh và nguyên tắc sử dụng an toàn, hiệu quả.",
@@ -747,7 +790,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-blue-100 text-blue-800",
   },
   {
-    id: 11,
+    id: 12,
     title: "Massage cho bé sơ sinh: Kỹ thuật và lợi ích cho sự phát triển",
     excerpt:
       "Hướng dẫn các kỹ thuật massage nhẹ nhàng giúp bé sơ sinh phát triển toàn diện.",
@@ -763,7 +806,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-pink-100 text-pink-800",
   },
   {
-    id: 12,
+    id: 13,
     title: "Chế độ ăn kiêng Keto: Lợi ích và rủi ro cần biết",
     excerpt:
       "Phân tích chi tiết về chế độ ăn Keto, những lợi ích và những rủi ro tiềm ẩn.",
@@ -779,7 +822,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-orange-100 text-orange-800",
   },
   {
-    id: 13,
+    id: 14,
     title: "Phòng ngừa rạn da khi mang thai: Bí quyết từ chuyên gia",
     excerpt:
       "Những phương pháp hiệu quả để phòng ngừa rạn da trong thai kỳ từ các chuyên gia da liễu.",
@@ -794,7 +837,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-purple-100 text-purple-800",
   },
   {
-    id: 14,
+    id: 15,
     title: "Vitamin D cho trẻ em: Tầm quan trọng và nguồn bổ sung",
     excerpt:
       "Tìm hiểu về vai trò quan trọng của vitamin D đối với sự phát triển của trẻ em.",
@@ -809,7 +852,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-green-100 text-green-800",
   },
   {
-    id: 15,
+    id: 16,
     title: "Probiotics: Lợi khuẩn đường ruột và tác dụng với sức khỏe",
     excerpt:
       "Khám phá thế giới vi sinh vật có lợi và tác động tích cực của chúng đối với sức khỏe tổng thể.",
@@ -824,7 +867,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-blue-100 text-blue-800",
   },
   {
-    id: 16,
+    id: 17,
     title: "Cách nhận biết sớm dấu hiệu đột quỵ và sơ cứu khẩn cấp",
     excerpt:
       "Học cách nhận biết các dấu hiệu đột quỵ và kỹ thuật sơ cứu cần thiết để cứu sống người bệnh.",
@@ -880,7 +923,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-red-100 text-red-800",
   },
   {
-    id: 17,
+    id: 18,
     title: "Tập thể dục cho người cao tuổi: Bài tập an toàn và hiệu quả",
     excerpt:
       "Hướng dẫn các bài tập phù hợp giúp người cao tuổi duy trì sức khỏe và độ linh hoạt.",
@@ -895,7 +938,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-teal-100 text-teal-800",
   },
   {
-    id: 18,
+    id: 19,
     title: "Chăm sóc sức khỏe tim mạch: Phòng ngừa bệnh tim hiệu quả",
     excerpt:
       "Các biện pháp phòng ngừa bệnh tim mạch thông qua chế độ ăn uống và lối sống lành mạnh.",
@@ -910,7 +953,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-rose-100 text-rose-800",
   },
   {
-    id: 19,
+    id: 20,
     title: "Quản lý căng thẳng và stress trong cuộc sống hiện đại",
     excerpt:
       "Khám phá các phương pháp hiệu quả để quản lý căng thẳng và cải thiện sức khỏe tâm thần.",
@@ -926,7 +969,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-indigo-100 text-indigo-800",
   },
   {
-    id: 20,
+    id: 21,
     title: "Chăm sóc da mùa hè: Bảo vệ da khỏi tia UV và ô nhiễm",
     excerpt:
       "Hướng dẫn chi tiết cách chăm sóc và bảo vệ làn da trong mùa hè nóng bức.",
@@ -941,7 +984,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-yellow-100 text-yellow-800",
   },
   {
-    id: 21,
+    id: 22,
     title: "Phòng ngừa loãng xương ở phụ nữ sau mãn kinh",
     excerpt:
       "Tìm hiểu về nguyên nhân và các biện pháp phòng ngừa loãng xương hiệu quả.",
@@ -956,7 +999,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-purple-100 text-purple-800",
   },
   {
-    id: 22,
+    id: 23,
     title:
       "Khám phá bí mật của giấc ngủ: Tầm quan trọng của giấc ngủ chất lượng",
     excerpt:
@@ -973,7 +1016,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-slate-100 text-slate-800",
   },
   {
-    id: 23,
+    id: 24,
     title: "Dinh dưỡng cho người bệnh tiểu đường: Thực đơn và lời khuyên",
     excerpt:
       "Hướng dẫn chế độ dinh dưỡng phù hợp cho người mắc bệnh tiểu đường type 2.",
@@ -989,7 +1032,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-emerald-100 text-emerald-800",
   },
   {
-    id: 24,
+    id: 25,
     title: "Sức khỏe mắt trong thời đại số: Bảo vệ mắt khỏi ánh sáng xanh",
     excerpt:
       "Cách bảo vệ đôi mắt khỏi tác hại của màn hình điện tử và ánh sáng xanh.",
@@ -1005,7 +1048,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-cyan-100 text-cyan-800",
   },
   {
-    id: 25,
+    id: 26,
     title: "Phòng ngừa và điều trị bệnh gout: Lời khuyên từ chuyên gia",
     excerpt:
       "Tìm hiểu về nguyên nhân, triệu chứng và cách phòng ngừa bệnh gout hiệu quả.",
@@ -1020,7 +1063,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-orange-100 text-orange-800",
   },
   {
-    id: 26,
+    id: 27,
     title: "Sức khỏe nam giới: Tầm quan trọng của việc khám sức khỏe định kỳ",
     excerpt:
       "Những vấn đề sức khỏe nam giới cần chú ý và tầm quan trọng của việc khám định kỳ.",
@@ -1036,7 +1079,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-blue-100 text-blue-800",
   },
   {
-    id: 27,
+    id: 28,
     title: "Vaccine COVID-19: Hiệu quả và tác dụng phụ cần biết",
     excerpt:
       "Thông tin cập nhật về các loại vaccine COVID-19, hiệu quả và tác dụng phụ.",
@@ -1052,7 +1095,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-green-100 text-green-800",
   },
   {
-    id: 28,
+    id: 29,
     title: "Chăm sóc răng miệng: Phòng ngừa sâu răng và bệnh nướu",
     excerpt:
       "Hướng dẫn chăm sóc răng miệng đúng cách để phòng ngừa các bệnh lý nha khoa.",
@@ -1068,7 +1111,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-pink-100 text-pink-800",
   },
   {
-    id: 29,
+    id: 30,
     title: "Ung thư: Tầm quan trọng của việc tầm soát và phát hiện sớm",
     excerpt:
       "Các phương pháp tầm soát ung thư và tầm quan trọng của việc phát hiện sớm.",
@@ -1084,7 +1127,7 @@ export const blogPosts: BlogPost[] = [
     categoryColor: "bg-red-100 text-red-800",
   },
   {
-    id: 30,
+    id: 31,
     title: "Dinh dưỡng thể thao: Chế độ ăn cho người tập luyện",
     excerpt:
       "Hướng dẫn chế độ dinh dưỡng phù hợp cho người tham gia hoạt động thể thao.",
