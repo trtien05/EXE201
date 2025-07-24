@@ -6,6 +6,7 @@ import MainLayout from "../components/layout/MainLayout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import { hospitals } from "../data/mockData";
+import { services } from "../data/services";
 
 const HospitalsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -148,14 +149,19 @@ const HospitalsPage: React.FC = () => {
                   <div className="mb-4">
                     <p className="text-sm text-gray-500 mb-2">Dịch vụ:</p>
                     <div className="flex flex-wrap gap-1">
-                      {hospital.services.slice(0, 3).map((serviceId) => (
-                        <span
-                          key={serviceId}
-                          className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
-                        >
-                          Dịch vụ {serviceId}
-                        </span>
-                      ))}
+                      {hospital.services.slice(0, 3).map((serviceId) => {
+                        const service = services.find(
+                          (s) => s.id === serviceId
+                        );
+                        return (
+                          <span
+                            key={serviceId}
+                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                          >
+                            {service ? service.name : `Dịch vụ ${serviceId}`}
+                          </span>
+                        );
+                      })}
                       {hospital.services.length > 3 && (
                         <span className="text-xs text-gray-500">
                           +{hospital.services.length - 3} khác

@@ -9,6 +9,7 @@ import HospitalOverview from "../components/HospitalDetail/HospitalOverview";
 import HospitalServices from "../components/HospitalDetail/HospitalServices";
 import HospitalReviews from "../components/HospitalDetail/HospitalReviews";
 import { hospitals } from "../data/mockData";
+import { services } from "../data/services";
 
 const HospitalDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -127,14 +128,19 @@ const HospitalDetailPage: React.FC = () => {
                   <div>
                     <p className="text-gray-600 text-sm">Dịch vụ</p>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {hospital.services.slice(0, 4).map((serviceId) => (
-                        <span
-                          key={serviceId}
-                          className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
-                        >
-                          Dịch vụ {serviceId}
-                        </span>
-                      ))}
+                      {hospital.services.slice(0, 4).map((serviceId) => {
+                        const service = services.find(
+                          (s) => s.id === serviceId
+                        );
+                        return (
+                          <span
+                            key={serviceId}
+                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                          >
+                            {service ? service.name : `Dịch vụ ${serviceId}`}
+                          </span>
+                        );
+                      })}
                       {hospital.services.length > 4 && (
                         <span className="text-xs text-gray-500">
                           +{hospital.services.length - 4} khác

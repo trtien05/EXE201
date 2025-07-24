@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 import Button from "../ui/Button";
 
 const SearchSection: React.FC = () => {
@@ -9,14 +9,12 @@ const SearchSection: React.FC = () => {
     "hospital" | "doctor" | "service"
   >("hospital");
   const [searchQuery, setSearchQuery] = useState("");
-  const [location, setLocation] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
     const searchParams = new URLSearchParams();
     if (searchQuery) searchParams.set("query", searchQuery);
-    if (location) searchParams.set("location", location);
 
     // Navigate to appropriate page with search parameters
     if (searchType === "service") {
@@ -95,19 +93,6 @@ const SearchSection: React.FC = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-
-              {/* <div className="lg:col-span-3 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Địa điểm (tỉnh, thành phố)"
-                  className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </div> */}
 
               <div className="lg:col-span-1">
                 <Button

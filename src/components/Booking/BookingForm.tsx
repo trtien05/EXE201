@@ -4,6 +4,8 @@ import { User, MapPin, Calendar, Clock } from "lucide-react";
 import Button from "../ui/Button";
 import { doctors, hospitals, services } from "../../data/mockData";
 import { toast } from "react-toastify";
+import { addBooking } from "../../data/mockData";
+import { Booking } from "../../data/types";
 
 const BookingForm: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -82,43 +84,45 @@ const BookingForm: React.FC = () => {
       (slot) => slot.id === selectedTimeSlot
     );
 
-    const bookingData = {
-      ...formData,
+    const bookingId = `BK${Date.now()}`;
+    const bookingData: Booking = {
+      id: bookingId,
+      userId: JSON.parse(localStorage.getItem("user") || "{}").id || "",
       doctorId: doctor.id,
       doctorName: doctor.name,
-      hospitalId: hospital?.id,
-      hospitalName: hospital?.name,
-      timeSlot: selectedSlot,
-      consultationFee: doctor.consultationFee,
+      hospitalId: hospital?.id || "",
+      hospitalName: hospital?.name || "",
+      specialty: doctor.specialty || "",
+      date: selectedSlot?.date || "",
+      time: selectedSlot
+        ? `${selectedSlot.startTime} - ${selectedSlot.endTime}`
+        : "",
+      status: "pending",
+      fee: doctor.consultationFee,
+      patientName: formData.patientName,
+      dateOfBirth: formData.dateOfBirth,
+      gender: formData.gender,
+      phone: formData.phone,
+      email: formData.email,
+      zalo: formData.zalo,
+      address: formData.address,
+      reason: formData.reason,
+      paymentMethod: formData.paymentMethod,
       bookingDate: new Date().toISOString(),
     };
-
-    console.log("Booking submitted:", bookingData);
-
-    // Create booking ID and navigate to payment
-    const bookingId = `BK${Date.now()}`;
+    addBooking(bookingData);
+    toast.success("Đặt lịch thành công! Chuyển đến trang thanh toán...");
     const params = new URLSearchParams({
       bookingId,
       amount: doctor.consultationFee?.toString() || "0",
       doctorName: doctor.name || "",
       hospitalName: hospital?.name || "",
     });
-
-    toast.success("Đặt lịch thành công! Chuyển đến trang thanh toán...");
     navigate(`/checkout-payment?${params.toString()}`);
   };
 
   const formatTimeSlot = (timeSlot: any) => {
     return `${timeSlot.startTime} - ${timeSlot.endTime}`;
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   return (

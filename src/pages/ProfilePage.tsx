@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { Select } from "antd";
 import {
   User,
   Edit,
   Calendar,
   CreditCard,
   Settings,
-  Mail,
-  Phone,
-  MapPin,
   Camera,
 } from "lucide-react";
 import MainLayout from "../components/layout/MainLayout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Tabs from "../components/ui/Tabs";
-import { verifyToken, User as UserType } from "../data/mockData";
+import {
+  verifyToken,
+  User as UserType,
+  getBookingsByUserId,
+  Booking,
+} from "../data/mockData";
 import { toast } from "react-toastify";
 import {
   LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  Line,
 } from "recharts";
 import OvulationCalculator from "../components/ToolsPage/OvulationCalculator";
 import DueDateCalculator from "../components/ToolsPage/DueDateCalculator";
@@ -33,38 +36,6 @@ import PregnancyWeight from "../components/ToolsPage/PregnancyWeight";
 // Import the pregnancy calculator components
 
 // Mock data for bookings and transactions
-const mockBookings = [
-  {
-    id: "BK1701234567",
-    doctorName: "BS.CKII Phan Thị Hòa",
-    hospitalName: "Bệnh viện Quốc tế Columbia Asia Bình Dương",
-    specialty: "Sản - Phụ khoa",
-    date: "2024-06-16",
-    time: "08:00 - 08:30",
-    status: "confirmed",
-    fee: 290000,
-  },
-  {
-    id: "BK1701234568",
-    doctorName: "TS.BS Trần Lệ Thủy",
-    hospitalName: "Bệnh viện Quốc tế City",
-    specialty: "Sản - Phụ khoa",
-    date: "2024-01-20",
-    time: "14:00 - 14:30",
-    status: "pending",
-    fee: 300000,
-  },
-  {
-    id: "BK1701234569",
-    doctorName: "PGS.TS.BS Lê Quang Quốc Anh",
-    hospitalName: "Bệnh viện Quốc tế Columbia Asia Bình Dương",
-    specialty: "Khoa tiêu hóa",
-    date: "2024-01-10",
-    time: "10:30 - 11:00",
-    status: "completed",
-    fee: 350000,
-  },
-];
 
 const mockTransactions = [
   //   {
@@ -108,6 +79,7 @@ const ProfilePage: React.FC = () => {
     email: "",
     avatar: "",
   });
+  // Remove unused userBookings state
   const [bmiData, setBmiData] = useState({
     weight: "",
     height: "",
@@ -128,13 +100,17 @@ const ProfilePage: React.FC = () => {
           email: user.email,
           avatar: user.avatar || "",
         });
+        // No need to set userBookings, use getBookingsByUserId directly in BookingHistoryTab
       }
-    }
 
-    // Load BMI history from localStorage
-    const savedBMIHistory = localStorage.getItem("bmiHistory");
-    if (savedBMIHistory) {
-      setBmiData((prev) => ({ ...prev, history: JSON.parse(savedBMIHistory) }));
+      // Load BMI history from localStorage
+      const savedBMIHistory = localStorage.getItem("bmiHistory");
+      if (savedBMIHistory) {
+        setBmiData((prev) => ({
+          ...prev,
+          history: JSON.parse(savedBMIHistory),
+        }));
+      }
     }
   }, []);
 
@@ -457,75 +433,298 @@ const ProfilePage: React.FC = () => {
     </div>
   );
 
-  const BookingHistoryTab = () => (
-    <div className="space-y-6">
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-6">
-          Lịch sử đặt khám
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Mã đặt lịch
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Bác sĩ
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ngày khám
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Thời gian
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Phí khám
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Trạng thái
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {mockBookings.map((booking) => (
-                <tr key={booking.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {booking.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {booking.doctorName}
+  const BookingHistoryTab = () => {
+    const token = localStorage.getItem("token");
+    let userId = "";
+    if (token) {
+      const user = verifyToken(token);
+      if (user) userId = user.id;
+    }
+    const bookings = getBookingsByUserId(userId);
+    console.log(bookings);
+    // Helper to check if booking can be changed/cancelled
+    const canModifyBooking = (bookingDate: string) => {
+      const now = new Date();
+      const date = new Date(bookingDate);
+      const diff = date.getTime() - now.getTime();
+      return true;
+    };
+
+    // Modal state
+    const [showChangeModal, setShowChangeModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
+      null
+    );
+    const [changeDate, setChangeDate] = useState("");
+    const [changeTime, setChangeTime] = useState("");
+    const [availableSlots, setAvailableSlots] = useState<
+      {
+        date: string;
+        startTime: string;
+        endTime: string;
+        id: string;
+        isAvailable: boolean;
+      }[]
+    >([]);
+
+    const openChangeModal = (bookingId: string) => {
+      const booking = bookings.find((b) => b.id === bookingId);
+      if (!booking) return toast.error("Không tìm thấy lịch khám!");
+      setSelectedBookingId(bookingId);
+      setChangeDate(booking.date);
+      setChangeTime(booking.time);
+      // Find doctor and available slots
+      import("../data/doctors")
+        .then((module) => {
+          const doctors = module.doctors;
+          const doctor = doctors.find(
+            (d: any) => d.name === booking.doctorName
+          );
+          if (doctor) {
+            const slots = doctor.availableTimeSlots.filter(
+              (slot: any) => slot.isAvailable
+            );
+            setAvailableSlots(slots);
+          } else {
+            setAvailableSlots([]);
+          }
+        })
+        .catch(() => setAvailableSlots([]));
+      setShowChangeModal(true);
+    };
+
+    const handleChangeBookingConfirm = () => {
+      if (!selectedBookingId) return;
+      const booking = bookings.find((b) => b.id === selectedBookingId);
+      if (!booking) return toast.error("Không tìm thấy lịch khám!");
+      if (changeDate && changeTime) {
+        booking.date = changeDate;
+        booking.time = changeTime;
+        toast.success("Thay đổi lịch khám thành công!");
+        setShowChangeModal(false);
+      } else {
+        toast.info("Thay đổi lịch khám bị hủy hoặc không hợp lệ.");
+      }
+    };
+
+    const openCancelModal = (bookingId: string) => {
+      setSelectedBookingId(bookingId);
+      setShowCancelModal(true);
+    };
+
+    const handleCancelBookingConfirm = () => {
+      if (!selectedBookingId) return;
+      const booking = bookings.find((b) => b.id === selectedBookingId);
+      if (!booking) return toast.error("Không tìm thấy lịch khám!");
+      booking.status = "cancelled";
+      toast.success("Lịch khám đã được hủy thành công.");
+      setShowCancelModal(false);
+    };
+
+    const handleModalClose = () => {
+      setShowChangeModal(false);
+      setShowCancelModal(false);
+      setSelectedBookingId(null);
+    };
+
+    return (
+      <div className="space-y-6">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-6">
+            Lịch sử đặt khám
+          </h3>
+          <p className="mb-4 text-sm text-yellow-700 bg-yellow-50 rounded px-3 py-2">
+            <strong>Lưu ý:</strong> Bạn chỉ có thể thay đổi hoặc hủy lịch khám
+            trước ít nhất <span className="font-bold">24 giờ</span> so với thời
+            gian khám đã đặt.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Mã đặt lịch
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Bác sĩ
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ngày khám
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Thời gian
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Phí khám
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Trạng thái
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Thao tác
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {bookings.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-4 text-gray-500">
+                      Bạn chưa có lịch sử đặt khám nào.
+                    </td>
+                  </tr>
+                ) : (
+                  bookings.map((booking) => (
+                    <tr key={booking.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {booking.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {booking.doctorName}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {booking.specialty}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {booking.hospitalName}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(booking.date).toLocaleDateString("vi-VN")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {booking.time}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Intl.NumberFormat("vi-VN").format(booking.fee)}đ
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(booking.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {booking.status !== "cancelled" &&
+                        canModifyBooking(booking.date) ? (
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => openChangeModal(booking.id)}
+                            >
+                              Thay đổi
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => openCancelModal(booking.id)}
+                            >
+                              Hủy
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs">
+                            Không thể thao tác
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+                {/* Change Booking Modal */}
+                {showChangeModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                      <h4 className="text-lg font-semibold mb-4">
+                        Thay đổi lịch khám
+                      </h4>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium mb-1">
+                          Chọn thời gian mới
+                        </label>
+                        {availableSlots.length > 0 ? (
+                          <Select
+                            style={{ width: "100%" }}
+                            placeholder="-- Chọn thời gian --"
+                            value={
+                              changeDate && changeTime
+                                ? changeDate +
+                                  "|" +
+                                  changeTime.split(" - ").join("|")
+                                : undefined
+                            }
+                            onChange={(val: string) => {
+                              const [date, startTime, endTime] = val.split("|");
+                              setChangeDate(date);
+                              setChangeTime(startTime + " - " + endTime);
+                            }}
+                          >
+                            {availableSlots.map((slot) => (
+                              <Select.Option
+                                key={slot.id}
+                                value={
+                                  slot.date +
+                                  "|" +
+                                  slot.startTime +
+                                  "|" +
+                                  slot.endTime
+                                }
+                              >
+                                {new Date(slot.date).toLocaleDateString(
+                                  "vi-VN"
+                                )}{" "}
+                                {slot.startTime} - {slot.endTime}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        ) : (
+                          <div className="text-sm text-gray-500">
+                            Không có thời gian trống cho bác sĩ này.
+                          </div>
+                        )}
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {booking.specialty}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {booking.hospitalName}
+                      <div className="flex gap-3 justify-end">
+                        <Button variant="outline" onClick={handleModalClose}>
+                          Hủy
+                        </Button>
+                        <Button
+                          onClick={handleChangeBookingConfirm}
+                          disabled={!changeDate || !changeTime}
+                        >
+                          Xác nhận
+                        </Button>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(booking.date).toLocaleDateString("vi-VN")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {booking.time}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Intl.NumberFormat("vi-VN").format(booking.fee)}đ
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(booking.status)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-    </div>
-  );
+                  </div>
+                )}
+                {/* Cancel Booking Modal */}
+                {showCancelModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                      <h4 className="text-lg font-semibold mb-4">
+                        Xác nhận hủy lịch khám
+                      </h4>
+                      <p className="mb-6">
+                        Bạn có chắc chắn muốn hủy lịch khám này không?
+                      </p>
+                      <div className="flex gap-3 justify-end">
+                        <Button variant="outline" onClick={handleModalClose}>
+                          Không
+                        </Button>
+                        <Button onClick={handleCancelBookingConfirm}>
+                          Có, hủy lịch
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+    );
+  };
 
   const TransactionHistoryTab = () => (
     <div className="space-y-6">
@@ -810,6 +1009,18 @@ const ProfilePage: React.FC = () => {
           </p>
         </div>
       </Card>
+      <thead>
+        <tr>
+          <th className="px-4 py-2">Mã đặt khám</th>
+          <th className="px-4 py-2">Bác sĩ</th>
+          <th className="px-4 py-2">Bệnh viện</th>
+          <th className="px-4 py-2">Chuyên khoa</th>
+          <th className="px-4 py-2">Ngày</th>
+          <th className="px-4 py-2">Giờ</th>
+          <th className="px-4 py-2">Trạng thái</th>
+          <th className="px-4 py-2">Phí</th>
+        </tr>
+      </thead>
 
       {/* Health Advice */}
       {bmiData.currentBMI > 0 && (
@@ -1055,7 +1266,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-800">
-                    {mockBookings.length}
+                    {getBookingsByUserId(currentUser.id).length}
                   </p>
                   <p className="text-gray-600">Lịch đặt khám</p>
                 </div>
@@ -1068,9 +1279,7 @@ const ProfilePage: React.FC = () => {
                   <CreditCard className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-800">
-                    {mockTransactions.length}
-                  </p>
+                  <p className="text-2xl font-bold text-gray-800">0</p>
                   <p className="text-gray-600">Giao dịch</p>
                 </div>
               </div>
