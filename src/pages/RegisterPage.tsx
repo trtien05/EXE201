@@ -2,8 +2,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
-import { users } from "../data/users";
-import type { User } from "../data/types";
+import { useState } from "react";
+import { authApi } from "../lib/api";
 import MainLayout from "../components/layout/MainLayout";
 import Button from "../components/ui/Button";
 import { toast } from "react-toastify";
@@ -18,31 +18,30 @@ const RegisterPage: React.FC = () => {
   } = useForm<{ email: string; password: string; confirmPassword: string }>();
   const password = watch("password");
 
-  const onSubmit = (data: {
+  const [loading, setLoading] = useState(false);
+  const onSubmit = async (data: {
     email: string;
     password: string;
     confirmPassword: string;
   }) => {
-    // Check if email already exists
-    const exists = users.find((u) => u.email === data.email);
-    if (exists) {
-      toast.error("Email đã tồn tại!");
-      return;
+    setLoading(true);
+    try {
+      const res = await authApi.register({
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
+      if (res && res.flag) {
+        toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
+        navigate("/login");
+      } else {
+        toast.error(res?.message || "Đăng ký thất bại!");
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Đăng ký thất bại!");
+    } finally {
+      setLoading(false);
     }
-    // Create new user object
-    const newUser: User = {
-      id: `u${users.length + 1}`,
-      email: data.email,
-      password: data.password,
-      name: data.email.split("@")[0],
-      phone: "",
-      avatar:
-        "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      role: "user",
-    };
-    users.push(newUser);
-    toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
-    navigate("/login");
   };
 
   return (

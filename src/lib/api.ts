@@ -1,14 +1,53 @@
-import axios from 'axios';
+// Hospital Services API
+export interface HospitalService {
+  id: string;
+  servName: string;
+  servDesc: string;
+  servPrice: string;
+  servImage: string;
+  available: boolean;
+  createdAt: string;
+  updatedAt: string;
+  hospitalId: string;
+}
 
+export interface HospitalServicesResponse {
+  flag: boolean;
+  code: number;
+  message: string;
+  data: {
+    content: HospitalService[];
+    page: {
+      size: number;
+      number: number;
+      totalElements: number;
+      totalPages: number;
+    };
+  };
+}
+import axios from "axios";
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api/v1', 
+  baseURL: "https://sencare-server.azurewebsites.net/api/v1",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
+export const hosservApi = {
+  getAllServices: async (
+    page: number = 0,
+    size: number = 20
+  ): Promise<HospitalServicesResponse> => {
+    const response = await api.get(`/hosserv?page=${page}&size=${size}`);
+    return response.data;
+  },
+  getServiceById: async (id: string): Promise<HospitalService> => {
+    const response = await api.get(`/hosserv/${id}`);
+    return response.data.data;
+  },
+};
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -122,17 +161,24 @@ export interface HospitalDetailResponse {
 
 export const authApi = {
   login: async (data: LoginData) => {
-    const response = await api.post('/auth/login', data);
+    const response = await api.post("/auth/login", data);
     return response.data;
   },
   register: async (data: RegisterData) => {
-    const response = await api.post('/auth/register', data);
+    const response = await api.post("/auth/register", data);
+    return response.data;
+  },
+  me: async () => {
+    const response = await api.get("/auth/me");
     return response.data;
   },
 };
 
 export const doctorsApi = {
-  getAllDoctors: async (page: number = 0, size: number = 4): Promise<DoctorsResponse> => {
+  getAllDoctors: async (
+    page: number = 0,
+    size: number = 4
+  ): Promise<DoctorsResponse> => {
     const response = await api.get(`/doctors?page=${page}&size=${size}`);
     return response.data;
   },
@@ -140,23 +186,44 @@ export const doctorsApi = {
     const response = await api.get(`/doctors/${doctorId}`);
     return response.data;
   },
-  searchDoctorsByName: async (name: string, page: number = 0, size: number = 20): Promise<DoctorsResponse> => {
-    const response = await api.get(`/doctors/search-name?name=${encodeURIComponent(name)}&page=${page}&size=${size}`);
+  searchDoctorsByName: async (
+    name: string,
+    page: number = 0,
+    size: number = 20
+  ): Promise<DoctorsResponse> => {
+    const response = await api.get(
+      `/doctors/search-name?name=${encodeURIComponent(
+        name
+      )}&page=${page}&size=${size}`
+    );
     return response.data;
   },
 };
 
 export const hospitalsApi = {
-  getAllHospitals: async (page: number = 0, size: number = 20): Promise<HospitalsResponse> => {
+  getAllHospitals: async (
+    page: number = 0,
+    size: number = 5
+  ): Promise<HospitalsResponse> => {
     const response = await api.get(`/hospitals?page=${page}&size=${size}`);
     return response.data;
   },
-  getHospitalById: async (hospitalId: string): Promise<HospitalDetailResponse> => {
+  getHospitalById: async (
+    hospitalId: string
+  ): Promise<HospitalDetailResponse> => {
     const response = await api.get(`/hospitals/${hospitalId}`);
     return response.data;
   },
-  searchHospitalsByName: async (name: string, page: number = 0, size: number = 20): Promise<HospitalsResponse> => {
-    const response = await api.get(`/hospitals/search-name?name=${encodeURIComponent(name)}&page=${page}&size=${size}`);
+  searchHospitalsByName: async (
+    name: string,
+    page: number = 0,
+    size: number = 20
+  ): Promise<HospitalsResponse> => {
+    const response = await api.get(
+      `/hospitals/search-name?name=${encodeURIComponent(
+        name
+      )}&page=${page}&size=${size}`
+    );
     return response.data;
   },
 };

@@ -1,17 +1,19 @@
 import React from "react";
-import { Phone, Users, Award, Building, MapPin } from "lucide-react";
-import { Hospital } from "../../data/mockData";
+import { Users, Award, Building, MapPin } from "lucide-react";
 
 interface HospitalOverviewProps {
-  hospital: Hospital;
+  hospital: any; // Use API response type
 }
 
 const HospitalOverview: React.FC<HospitalOverviewProps> = ({ hospital }) => {
+  // API fields: hospitalName, hospitalAddress, hospitalPhone, hosServs, hospitalSpecs, hospitalAvatar, etc.
   return (
     <div>
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Giới thiệu</h3>
-        <p className="text-gray-600 leading-relaxed">{hospital.description}</p>
+        <p className="text-gray-600 leading-relaxed">
+          {hospital?.hospitalDescription || "Chưa có mô tả."}
+        </p>
       </div>
 
       <div className="mb-6">
@@ -23,36 +25,24 @@ const HospitalOverview: React.FC<HospitalOverviewProps> = ({ hospital }) => {
             <Building className="h-5 w-5 text-[#0077B6] mr-3 flex-shrink-0" />
             <div>
               <span className="font-medium text-gray-700">Tên bệnh viện: </span>
-              <span className="text-gray-600">{hospital.name}</span>
+              <span className="text-gray-600">
+                {hospital?.hospitalName || "-"}
+              </span>
             </div>
           </div>
           <div className="flex items-center">
             <MapPin className="h-5 w-5 text-[#0077B6] mr-3 flex-shrink-0" />
             <div>
               <span className="font-medium text-gray-700">Địa chỉ: </span>
-              <span className="text-gray-600">{hospital.address}</span>
+              <span className="text-gray-600">
+                {hospital?.hospitalAddress || "-"}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          Giờ làm việc
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {Object.entries(hospital.openingHours).map(([day, hours]) => (
-            <div
-              key={day}
-              className="flex justify-between items-center p-2 bg-gray-50 rounded"
-            >
-              <span className="font-medium text-gray-700">{day}:</span>
-              <span className="text-gray-600">{hours}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
+      {/* Thống kê */}
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Thống kê</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -61,7 +51,7 @@ const HospitalOverview: React.FC<HospitalOverviewProps> = ({ hospital }) => {
               <Users className="h-6 w-6 text-[#0077B6] mr-3" />
               <div>
                 <p className="text-2xl font-bold text-[#0077B6]">
-                  {hospital.doctors.length}
+                  {hospital?.doctors ? hospital.doctors.length : 0}
                 </p>
                 <p className="text-sm text-gray-600">Bác sĩ</p>
               </div>
@@ -72,7 +62,7 @@ const HospitalOverview: React.FC<HospitalOverviewProps> = ({ hospital }) => {
               <Award className="h-6 w-6 text-green-600 mr-3" />
               <div>
                 <p className="text-2xl font-bold text-green-600">
-                  {hospital.services.length}
+                  {hospital?.hosServs ? hospital.hosServs.length : 0}
                 </p>
                 <p className="text-sm text-gray-600">Dịch vụ</p>
               </div>
@@ -81,6 +71,7 @@ const HospitalOverview: React.FC<HospitalOverviewProps> = ({ hospital }) => {
         </div>
       </div>
 
+      {/* Đánh giá */}
       <div>
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Đánh giá</h3>
         <div className="bg-yellow-50 p-4 rounded-lg">
@@ -88,10 +79,13 @@ const HospitalOverview: React.FC<HospitalOverviewProps> = ({ hospital }) => {
             <Award className="h-6 w-6 text-yellow-600 mr-3" />
             <div>
               <p className="text-2xl font-bold text-yellow-600">
-                {hospital.rating}/5
+                {hospital?.hospitalRating
+                  ? hospital.hospitalRating.toFixed(1)
+                  : "-"}
+                /5
               </p>
               <p className="text-sm text-gray-600">
-                ({hospital.reviews.length} đánh giá)
+                ({hospital?.hospitalReviewCount || 0} đánh giá)
               </p>
             </div>
           </div>

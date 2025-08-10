@@ -14,7 +14,15 @@ const Chatbot = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const prompt = `Sencare là nền tảng đặt lịch khám bệnh trực tuyến giúp người dùng dễ dàng tìm và đặt hẹn với các bác sĩ uy tín tại 
+các bệnh viện chất lượng cao như Spa Thúy Ngân Da liễu TP.HCM. Ứng dụng cung cấp thông tin chi tiết về bác sĩ 
+Lê Ngọc (Da liễu) — Bác sĩ Lê Ngọc là chuyên gia trong lĩnh vực thẩm mỹ không xâm lấn, với nhiều năm kinh nghiệm trong việc cân chỉnh khuyết điểm gương mặt mà không cần phẫu thuật. Bác sĩ luôn tận tâm tư vấn và mang đến cho khách hàng vẻ đẹp tự nhiên, hài hòa..
+ Bệnh viện đi kèm cũng được mô tả rõ về vị trí, giờ mở cửa, cơ sở vật chất và dịch vụ y tế nổi bật. 
+Chatbot Sencare có thể hỗ trợ người dùng tìm bác sĩ theo chuyên khoa, bệnh viện, giá khám hoặc thời gian rảnh; 
+giải đáp thắc mắc và hướng dẫn từng bước để đặt lịch nhanh chóng và chính xác.
+ Hãy giúp người dùng trả lời các câu hỏi về tư vấn dịch vụ và bác sĩ của bệnh viện. 
+Đây là câu hỏi của người dùng ${input}. Hãy trò chuyện như bạn là một chuyên gia tư vấn y tế,
+ cung cấp thông tin chính xác và hữu ích. Mỗi lần trả lời chỉ nên có một câu hỏi hoặc một câu trả lời ngắn gọn.`;
   const handleSend = async () => {
     if (input.trim()) {
       setMessages([...messages, { from: "user", text: input }]);
@@ -23,7 +31,7 @@ const Chatbot = () => {
       try {
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash",
-          contents: `Sencare là nền tảng đặt lịch khám bệnh trực tuyến giúp người dùng dễ dàng tìm và đặt hẹn với các bác sĩ uy tín tại các bệnh viện chất lượng cao như Columbia Asia Bình Dương, Quốc tế City, Vinmec Central Park, Tim Tâm Đức và Da liễu TP.HCM. Ứng dụng cung cấp thông tin chi tiết về bác sĩ như BS.CKII Phan Thị Hòa (Sản - Phụ khoa), TS.BS Trần Lệ Thủy (Sản - Phụ khoa), PGS.TS.BS Lê Quang Quốc Anh (Tiêu hóa), BS.CKII Nguyễn Văn Tâm (Tim mạch), hay BS Trần Thị Lan (Da liễu) — với ảnh, chuyên môn, lịch khám, chi phí, đánh giá và nhận xét từ bệnh nhân. Bệnh viện đi kèm cũng được mô tả rõ về vị trí, giờ mở cửa, cơ sở vật chất và dịch vụ y tế nổi bật. Chatbot Sencare có thể hỗ trợ người dùng tìm bác sĩ theo chuyên khoa, bệnh viện, giá khám hoặc thời gian rảnh; giải đáp thắc mắc và hướng dẫn từng bước để đặt lịch nhanh chóng và chính xác. Hãy giúp người dùng trả lời các câu hỏi về tư vấn dịch vụ và bác sĩ của bệnh viện. Đây là câu hỏi của người dùng ${input}. Hãy trò chuyện như bạn là một chuyên gia tư vấn y tế, cung cấp thông tin chính xác và hữu ích. Mỗi lần trả lời chỉ nên có một câu hỏi hoặc một câu trả lời ngắn gọn.`,
+          contents: prompt,
         });
         setMessages((msgs) => [
           ...msgs,

@@ -5,50 +5,54 @@ import { Pagination, Input } from "antd";
 import MainLayout from "../components/layout/MainLayout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
-import { hospitals } from "../data/mockData";
-import { services } from "../data/services";
+import { hospitalsApi } from "../lib/api";
 
 const HospitalsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize] = useState(5);
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("query") || ""
   );
-
-  const filteredHospitals = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return hospitals;
-    }
-    return hospitals.filter(
-      (hospital) =>
-        hospital.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        hospital.description
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        hospital.location.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
-
-  const paginatedHospitals = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredHospitals.slice(startIndex, endIndex);
-  }, [filteredHospitals, currentPage, pageSize]);
-
-  const totalElements = filteredHospitals.length;
+  const [hospitals, setHospitals] = useState<any[]>([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const query = searchParams.get("query");
-    if (query) {
-      setSearchQuery(query);
-    }
-  }, [searchParams]);
+    const fetchHospitals = async () => {
+      setLoading(true);
+      try {
+        const res = await hospitalsApi.getAllHospitals(
+          currentPage - 1,
+          pageSize
+        );
+        console.log("response", res);
+        if (res && res.flag && res.data) {
+          setHospitals(res.data.content);
+          setTotalElements(res.data.page.totalElements);
+        } else {
+          setHospitals([]);
+          setTotalElements(0);
+        }
+      } catch (err) {
+        setHospitals([]);
+        setTotalElements(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHospitals();
+  }, [currentPage, pageSize]);
+
+  const paginatedHospitals = hospitals;
+
+  // Optionally, handle searchQuery with API if supported
 
   const handlePageChange = (page: number, size?: number) => {
     setCurrentPage(page);
     if (size && size !== pageSize) {
-      setPageSize(size);
+      // setPageSize(size);
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -85,7 +89,7 @@ const HospitalsPage: React.FC = () => {
 
       <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-32 xl:px-52 py-6 md:py-8">
         {/* Search Bar */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <div className="flex gap-2">
             <Input.Search
               placeholder="Tìm kiếm bệnh viện theo tên..."
@@ -116,61 +120,79 @@ const HospitalsPage: React.FC = () => {
               bệnh viện
             </span>
           )}
-        </div>
+        </div> */}
 
         {paginatedHospitals.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {paginatedHospitals.map((hospital) => (
               <Card
-                key={hospital.id}
+                key={hospital.hospitalId}
                 hoverable
                 className="h-full flex flex-col"
               >
                 <div className="h-40 md:h-48 overflow-hidden">
                   <img
-                    src={hospital.thumbnail}
-                    alt={hospital.name}
+                    src={hospital.hospitalAvatar}
+                    alt={hospital.hospitalName}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
                 <div className="p-4 md:p-5 flex flex-col flex-grow">
                   <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2 line-clamp-2">
-                    {hospital.name}
+                    {hospital.hospitalName}
                   </h3>
                   <div className="flex items-center mb-2">
                     <Phone className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
                     <span className="text-gray-600 text-sm">
-                      {hospital.location}
+                      {hospital.hospitalPhone}
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm md:text-base mb-3 line-clamp-2 flex-grow">
-                    {hospital.description}
+                    {hospital.hospitalDescription}
                   </p>
                   <div className="mb-4">
-                    <p className="text-sm text-gray-500 mb-2">Dịch vụ:</p>
+                    <p className="text-sm text-gray-500 mb-2">Chuyên khoa:</p>
                     <div className="flex flex-wrap gap-1">
-                      {hospital.services.slice(0, 3).map((serviceId) => {
-                        const service = services.find(
-                          (s) => s.id === serviceId
-                        );
-                        return (
+                      {hospital.hospitalSpecs &&
+                        hospital.hospitalSpecs.slice(0, 3).map((spec: any) => (
                           <span
-                            key={serviceId}
+                            key={spec.id}
                             className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
                           >
-                            {service ? service.name : `Dịch vụ ${serviceId}`}
+                            {spec.specName}
                           </span>
-                        );
-                      })}
-                      {hospital.services.length > 3 && (
+                        ))}
+                      {hospital.hospitalSpecs &&
+                        hospital.hospitalSpecs.length > 3 && (
+                          <span className="text-xs text-gray-500">
+                            +{hospital.hospitalSpecs.length - 3} khác
+                          </span>
+                        )}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-500 mb-2">
+                      Dịch vụ nổi bật:
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {hospital.hosServs &&
+                        hospital.hosServs.slice(0, 3).map((serv: any) => (
+                          <span
+                            key={serv.servId}
+                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                          >
+                            {serv.servName}
+                          </span>
+                        ))}
+                      {hospital.hosServs && hospital.hosServs.length > 3 && (
                         <span className="text-xs text-gray-500">
-                          +{hospital.services.length - 3} khác
+                          +{hospital.hosServs.length - 3} khác
                         </span>
                       )}
                     </div>
                   </div>
                   <div className="mt-auto">
-                    <Link to={`/hospitals/${hospital.id}`}>
+                    <Link to={`/hospitals/${hospital.hospitalId}`}>
                       <Button fullWidth>Xem chi tiết</Button>
                     </Link>
                   </div>

@@ -1,14 +1,11 @@
-import React from 'react';
-import { FileText } from 'lucide-react';
-import { Service, departments } from '../../data/mockData';
+import React from "react";
+import { FileText } from "lucide-react";
 
 interface ServiceInfoProps {
-  service: Service;
+  service: any; // Use API response type
 }
 
 const ServiceInfo: React.FC<ServiceInfoProps> = ({ service }) => {
-  const department = departments.find(d => d.id === service.departmentId);
-
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-start mb-6">
@@ -16,27 +13,33 @@ const ServiceInfo: React.FC<ServiceInfoProps> = ({ service }) => {
           <FileText className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-1">{service.name}</h1>
-          {department && (
-            <p className="text-gray-600 mb-3">Chuyên khoa: {department.name}</p>
-          )}
+          <h1 className="text-2xl font-bold text-gray-800 mb-1">
+            {service.servName}
+          </h1>
           <p className="text-lg text-[#0077B6] font-medium mb-4">
-            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(service.price)}
+            {(() => {
+              let price = service.servPrice;
+              if (typeof price === "string") {
+                price = price.replace(/[^\d.,]/g, "");
+                price = price.replace(/,/g, "");
+              }
+              const priceNumber = Number(price);
+              return isNaN(priceNumber)
+                ? service.servPrice
+                : new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(priceNumber);
+            })()}
           </p>
         </div>
       </div>
-      
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-3">Mô tả dịch vụ</h2>
-        <p className="text-gray-600">{service.description}</p>
+        <h2 className="text-xl font-semibold text-gray-800 mb-3">
+          Mô tả dịch vụ
+        </h2>
+        <p className="text-gray-600">{service.servDesc}</p>
       </div>
-      
-      {department && (
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">Thông tin chuyên khoa</h2>
-          <p className="text-gray-600">{department.description}</p>
-        </div>
-      )}
     </div>
   );
 };

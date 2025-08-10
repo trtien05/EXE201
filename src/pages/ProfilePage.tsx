@@ -12,12 +12,7 @@ import MainLayout from "../components/layout/MainLayout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Tabs from "../components/ui/Tabs";
-import {
-  verifyToken,
-  User as UserType,
-  getBookingsByUserId,
-  Booking,
-} from "../data/mockData";
+import { authApi } from "../lib/api";
 import { toast } from "react-toastify";
 import {
   LineChart,
@@ -71,14 +66,8 @@ const mockTransactions = [
 ];
 
 const ProfilePage: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    avatar: "",
-  });
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   // Remove unused userBookings state
   const [bmiData, setBmiData] = useState({
     weight: "",
@@ -89,20 +78,18 @@ const ProfilePage: React.FC = () => {
   const [isCalculating, setIsCalculating] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = verifyToken(token);
-      if (user) {
-        setCurrentUser(user);
-        setEditForm({
-          name: user.name,
-          phone: user.phone || "",
-          email: user.email,
-          avatar: user.avatar || "",
-        });
-        // No need to set userBookings, use getBookingsByUserId directly in BookingHistoryTab
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        const res = await authApi.me();
+        if (res && res.flag && res.data) {
+          setCurrentUser(res.data);
+        } else {
+          setCurrentUser(null);
+        }
+      } catch (err) {
+        setCurrentUser(null);
       }
-
       // Load BMI history from localStorage
       const savedBMIHistory = localStorage.getItem("bmiHistory");
       if (savedBMIHistory) {
@@ -111,19 +98,21 @@ const ProfilePage: React.FC = () => {
           history: JSON.parse(savedBMIHistory),
         }));
       }
-    }
+      setLoading(false);
+    };
+    fetchProfile();
   }, []);
 
-  const handleEditSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (currentUser) {
-      const updatedUser = { ...currentUser, ...editForm };
-      setCurrentUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setIsEditing(false);
-      toast.success("Cập nhật thông tin thành công!");
-    }
-  };
+  // const handleEditSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (currentUser) {
+  //     const updatedUser = { ...currentUser, ...editForm };
+  //     setCurrentUser(updatedUser);
+  //     localStorage.setItem("user", JSON.stringify(updatedUser));
+  //     setIsEditing(false);
+  //     toast.success("Cập nhật thông tin thành công!");
+  //   }
+  // };
 
   const calculateBMI = async () => {
     const weight = parseFloat(bmiData.weight);
@@ -272,519 +261,54 @@ const ProfilePage: React.FC = () => {
   const PersonalInfoTab = () => (
     <div className="space-y-6">
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Thông tin cá nhân
-          </h3>
-          <Button
-            variant="outline"
-            onClick={() => setIsEditing(!isEditing)}
-            className="flex items-center gap-2"
-          >
-            <Edit className="h-4 w-4" />
-            {isEditing ? "Hủy" : "Chỉnh sửa"}
-          </Button>
-        </div>
-
-        {!isEditing ? (
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex flex-col items-center">
-              <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-200">
-                {currentUser?.avatar ? (
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <User className="h-12 w-12 text-gray-400" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Họ và tên
-                </label>
-                <p className="text-gray-900">{currentUser?.name}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <p className="text-gray-900">{currentUser?.email}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Số điện thoại
-                </label>
-                <p className="text-gray-900">
-                  {currentUser?.phone || "Chưa cập nhật"}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Vai trò
-                </label>
-                <p className="text-gray-900 capitalize">Người dùng</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleEditSubmit} className="space-y-6">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex flex-col items-center">
-                <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-200 relative group">
-                  {editForm.avatar ? (
-                    <img
-                      src={editForm.avatar}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <User className="h-12 w-12 text-gray-400" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-                <input
-                  type="url"
-                  placeholder="URL ảnh đại diện"
-                  value={editForm.avatar}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({ ...prev, avatar: e.target.value }))
-                  }
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                />
-              </div>
-
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Họ và tên
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.name}
-                    onChange={(e) =>
-                      setEditForm((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={editForm.email}
-                    onChange={(e) =>
-                      setEditForm((prev) => ({
-                        ...prev,
-                        email: e.target.value,
-                      }))
-                    }
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Số điện thoại
-                  </label>
-                  <input
-                    type="tel"
-                    value={editForm.phone}
-                    onChange={(e) =>
-                      setEditForm((prev) => ({
-                        ...prev,
-                        phone: e.target.value,
-                      }))
-                    }
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                Lưu thay đổi
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsEditing(false)}
-              >
-                Hủy
-              </Button>
-            </div>
-          </form>
-        )}
-      </Card>
-    </div>
-  );
-
-  const BookingHistoryTab = () => {
-    const token = localStorage.getItem("token");
-    let userId = "";
-    if (token) {
-      const user = verifyToken(token);
-      if (user) userId = user.id;
-    }
-    const bookings = getBookingsByUserId(userId);
-    console.log(bookings);
-    // Helper to check if booking can be changed/cancelled
-    const canModifyBooking = (bookingDate: string) => {
-      const now = new Date();
-      const date = new Date(bookingDate);
-      const diff = date.getTime() - now.getTime();
-      return true;
-    };
-
-    // Modal state
-    const [showChangeModal, setShowChangeModal] = useState(false);
-    const [showCancelModal, setShowCancelModal] = useState(false);
-    const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
-      null
-    );
-    const [changeDate, setChangeDate] = useState("");
-    const [changeTime, setChangeTime] = useState("");
-    const [availableSlots, setAvailableSlots] = useState<
-      {
-        date: string;
-        startTime: string;
-        endTime: string;
-        id: string;
-        isAvailable: boolean;
-      }[]
-    >([]);
-
-    const openChangeModal = (bookingId: string) => {
-      const booking = bookings.find((b) => b.id === bookingId);
-      if (!booking) return toast.error("Không tìm thấy lịch khám!");
-      setSelectedBookingId(bookingId);
-      setChangeDate(booking.date);
-      setChangeTime(booking.time);
-      // Find doctor and available slots
-      import("../data/doctors")
-        .then((module) => {
-          const doctors = module.doctors;
-          const doctor = doctors.find(
-            (d: any) => d.name === booking.doctorName
-          );
-          if (doctor) {
-            const slots = doctor.availableTimeSlots.filter(
-              (slot: any) => slot.isAvailable
-            );
-            setAvailableSlots(slots);
-          } else {
-            setAvailableSlots([]);
-          }
-        })
-        .catch(() => setAvailableSlots([]));
-      setShowChangeModal(true);
-    };
-
-    const handleChangeBookingConfirm = () => {
-      if (!selectedBookingId) return;
-      const booking = bookings.find((b) => b.id === selectedBookingId);
-      if (!booking) return toast.error("Không tìm thấy lịch khám!");
-      if (changeDate && changeTime) {
-        booking.date = changeDate;
-        booking.time = changeTime;
-        toast.success("Thay đổi lịch khám thành công!");
-        setShowChangeModal(false);
-      } else {
-        toast.info("Thay đổi lịch khám bị hủy hoặc không hợp lệ.");
-      }
-    };
-
-    const openCancelModal = (bookingId: string) => {
-      setSelectedBookingId(bookingId);
-      setShowCancelModal(true);
-    };
-
-    const handleCancelBookingConfirm = () => {
-      if (!selectedBookingId) return;
-      const booking = bookings.find((b) => b.id === selectedBookingId);
-      if (!booking) return toast.error("Không tìm thấy lịch khám!");
-      booking.status = "cancelled";
-      toast.success("Lịch khám đã được hủy thành công.");
-      setShowCancelModal(false);
-    };
-
-    const handleModalClose = () => {
-      setShowChangeModal(false);
-      setShowCancelModal(false);
-      setSelectedBookingId(null);
-    };
-
-    return (
-      <div className="space-y-6">
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6">
-            Lịch sử đặt khám
-          </h3>
-          <p className="mb-4 text-sm text-yellow-700 bg-yellow-50 rounded px-3 py-2">
-            <strong>Lưu ý:</strong> Bạn chỉ có thể thay đổi hoặc hủy lịch khám
-            trước ít nhất <span className="font-bold">24 giờ</span> so với thời
-            gian khám đã đặt.
-          </p>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Mã đặt lịch
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Bác sĩ
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ngày khám
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Thời gian
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phí khám
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Trạng thái
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Thao tác
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {bookings.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center py-4 text-gray-500">
-                      Bạn chưa có lịch sử đặt khám nào.
-                    </td>
-                  </tr>
-                ) : (
-                  bookings.map((booking) => (
-                    <tr key={booking.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {booking.id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {booking.doctorName}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {booking.specialty}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {booking.hospitalName}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(booking.date).toLocaleDateString("vi-VN")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {booking.time}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Intl.NumberFormat("vi-VN").format(booking.fee)}đ
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(booking.status)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {booking.status !== "cancelled" &&
-                        canModifyBooking(booking.date) ? (
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => openChangeModal(booking.id)}
-                            >
-                              Thay đổi
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={() => openCancelModal(booking.id)}
-                            >
-                              Hủy
-                            </Button>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400 text-xs">
-                            Không thể thao tác
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-                {/* Change Booking Modal */}
-                {showChangeModal && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                      <h4 className="text-lg font-semibold mb-4">
-                        Thay đổi lịch khám
-                      </h4>
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">
-                          Chọn thời gian mới
-                        </label>
-                        {availableSlots.length > 0 ? (
-                          <Select
-                            style={{ width: "100%" }}
-                            placeholder="-- Chọn thời gian --"
-                            value={
-                              changeDate && changeTime
-                                ? changeDate +
-                                  "|" +
-                                  changeTime.split(" - ").join("|")
-                                : undefined
-                            }
-                            onChange={(val: string) => {
-                              const [date, startTime, endTime] = val.split("|");
-                              setChangeDate(date);
-                              setChangeTime(startTime + " - " + endTime);
-                            }}
-                          >
-                            {availableSlots.map((slot) => (
-                              <Select.Option
-                                key={slot.id}
-                                value={
-                                  slot.date +
-                                  "|" +
-                                  slot.startTime +
-                                  "|" +
-                                  slot.endTime
-                                }
-                              >
-                                {new Date(slot.date).toLocaleDateString(
-                                  "vi-VN"
-                                )}{" "}
-                                {slot.startTime} - {slot.endTime}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        ) : (
-                          <div className="text-sm text-gray-500">
-                            Không có thời gian trống cho bác sĩ này.
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex gap-3 justify-end">
-                        <Button variant="outline" onClick={handleModalClose}>
-                          Hủy
-                        </Button>
-                        <Button
-                          onClick={handleChangeBookingConfirm}
-                          disabled={!changeDate || !changeTime}
-                        >
-                          Xác nhận
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {/* Cancel Booking Modal */}
-                {showCancelModal && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                      <h4 className="text-lg font-semibold mb-4">
-                        Xác nhận hủy lịch khám
-                      </h4>
-                      <p className="mb-6">
-                        Bạn có chắc chắn muốn hủy lịch khám này không?
-                      </p>
-                      <div className="flex gap-3 justify-end">
-                        <Button variant="outline" onClick={handleModalClose}>
-                          Không
-                        </Button>
-                        <Button onClick={handleCancelBookingConfirm}>
-                          Có, hủy lịch
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      </div>
-    );
-  };
-
-  const TransactionHistoryTab = () => (
-    <div className="space-y-6">
-      <Card className="p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-6">
-          Lịch sử giao dịch
+          Thông tin cá nhân
         </h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Mã giao dịch
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Mã đặt lịch
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Số tiền
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Phương thức
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ngày giao dịch
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Trạng thái
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {mockTransactions.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {transaction.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {transaction.bookingId}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
-                    {new Intl.NumberFormat("vi-VN").format(transaction.amount)}đ
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {transaction.method}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(transaction.date).toLocaleDateString("vi-VN")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getTransactionStatusBadge(transaction.status)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ID
+            </label>
+            <p className="text-gray-900">{currentUser?.id}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <p className="text-gray-900">{currentUser?.email}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Trạng thái
+            </label>
+            <p className="text-gray-900">
+              {currentUser?.enabled ? "Đang hoạt động" : "Bị khóa"}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Vai trò
+            </label>
+            <p className="text-gray-900 capitalize">Người dùng</p>
+          </div>
         </div>
       </Card>
     </div>
   );
+
+  // BookingHistoryTab is commented out for now
+  /*
+  const BookingHistoryTab = () => {
+    // ...existing code...
+  };
+  */
+
+  // TransactionHistoryTab is commented out for now
+  /*
+  const TransactionHistoryTab = () => (
+    <div>TransactionHistoryTab</div>
+  );
+  */
 
   const BMIHealthTab = () => (
     <div className="space-y-6">
@@ -1189,16 +713,16 @@ const ProfilePage: React.FC = () => {
       label: "Thông tin cá nhân",
       content: <PersonalInfoTab />,
     },
-    {
-      id: "bookings",
-      label: "Lịch sử đặt khám",
-      content: <BookingHistoryTab />,
-    },
-    {
-      id: "transactions",
-      label: "Lịch sử giao dịch",
-      content: <TransactionHistoryTab />,
-    },
+    // {
+    //   id: "bookings",
+    //   label: "Lịch sử đặt khám",
+    //   content: <BookingHistoryTab />,
+    // },
+    // {
+    //   id: "transactions",
+    //   label: "Lịch sử giao dịch",
+    //   content: <TransactionHistoryTab />,
+    // },
     {
       id: "bmi-health",
       label: "Sức khỏe BMI",
@@ -1211,6 +735,18 @@ const ProfilePage: React.FC = () => {
     },
   ];
 
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+            <div className="text-lg text-gray-600">Đang tải thông tin...</div>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
   if (!currentUser) {
     return (
       <MainLayout>
@@ -1233,29 +769,7 @@ const ProfilePage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-52">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center mb-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden mr-4 bg-gray-200">
-                {currentUser.avatar ? (
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <User className="h-8 w-8 text-gray-400" />
-                  </div>
-                )}
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">
-                  {currentUser.name}
-                </h1>
-                <p className="text-gray-600">{currentUser.email}</p>
-              </div>
-            </div>
-          </div>
+          {/* No avatar/name header for new API structure */}
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -1266,7 +780,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-800">
-                    {getBookingsByUserId(currentUser.id).length}
+                    {/* {getBookingsByUserId(currentUser.id).length} */}
                   </p>
                   <p className="text-gray-600">Lịch đặt khám</p>
                 </div>

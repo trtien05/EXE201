@@ -2,7 +2,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
-import { authenticateUser, generateToken } from "../data/mockData";
+import { useState } from "react";
+import { authApi } from "../lib/api";
 import MainLayout from "../components/layout/MainLayout";
 import Button from "../components/ui/Button";
 import { toast } from "react-toastify";
@@ -20,18 +21,26 @@ const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm<LoginData>();
 
-  const onSubmit = (data: LoginData) => {
-    const user = authenticateUser(data.email, data.password);
-
-    if (user) {
-      const token = generateToken(user);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      toast.success("Đăng nhập thành công!");
-      navigate("/");
-      window.dispatchEvent(new Event("auth-change"));
-    } else {
-      toast.error("Email hoặc mật khẩu không chính xác!");
+  const [loading, setLoading] = useState(false);
+  const onSubmit = async (data: LoginData) => {
+    setLoading(true);
+    try {
+      const res = await authApi.login(data);
+      console.log("res", res);
+      if (res && res.flag && res.data && res.data.token) {
+        localStorage.setItem("token", res.data.token);
+        toast.success("Đăng nhập thành công!");
+        navigate("/");
+        window.dispatchEvent(new Event("auth-change"));
+      } else {
+        toast.error(res?.message || "Email hoặc mật khẩu không chính xác!");
+      }
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || "Email hoặc mật khẩu không chính xác!"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 

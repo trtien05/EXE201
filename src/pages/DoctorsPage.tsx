@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Pagination, Input } from "antd";
 import MainLayout from "../components/layout/MainLayout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
-import { doctors, hospitals } from "../data/mockData";
+import { doctorsApi } from "../lib/api";
 
 const DoctorsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,38 +13,31 @@ const DoctorsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("query") || ""
   );
-
-  const filteredDoctors = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return doctors;
-    }
-    return doctors.filter(
-      (doctor) =>
-        doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doctor.bio.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
-
-  const paginatedDoctors = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredDoctors.slice(startIndex, endIndex);
-  }, [filteredDoctors, currentPage, pageSize]);
-
-  const totalElements = filteredDoctors.length;
-
-  const getHospitalName = (hospitalId: string) => {
-    const hospital = hospitals.find((h) => h.id === hospitalId);
-    return hospital?.name || "Unknown Hospital";
-  };
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const query = searchParams.get("query");
-    if (query) {
-      setSearchQuery(query);
-    }
-  }, [searchParams]);
+    const fetchDoctors = async () => {
+      setLoading(true);
+      try {
+        const res = await doctorsApi.getAllDoctors(currentPage - 1, pageSize);
+        if (res && res.flag && res.data) {
+          setDoctors(res.data.content);
+          setTotalElements(res.data.page.totalElements);
+        } else {
+          setDoctors([]);
+          setTotalElements(0);
+        }
+      } catch (err) {
+        setDoctors([]);
+        setTotalElements(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctors();
+  }, [currentPage, pageSize, searchQuery]);
 
   const handlePageChange = (page: number, size?: number) => {
     setCurrentPage(page);
@@ -85,70 +78,36 @@ const DoctorsPage: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-32 xl:px-52 py-6 md:py-8">
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="flex gap-2">
-            <Input.Search
-              placeholder="Tìm kiếm bác sĩ theo tên..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onSearch={handleSearch}
-              onPressEnter={handleSearch}
-              size="large"
-              allowClear
-              className="flex-1"
-            />
-            {searchQuery && (
-              <Button onClick={handleClearSearch} variant="outline">
-                Xóa bộ lọc
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-4 text-gray-600 text-sm md:text-base">
-          {searchQuery ? (
-            <span>
-              Tìm thấy {totalElements} bác sĩ cho "{searchQuery}"
-            </span>
-          ) : (
-            <span>
-              Hiển thị {paginatedDoctors.length} trong tổng số {totalElements}{" "}
-              bác sĩ
-            </span>
-          )}
-        </div>
-
-        {paginatedDoctors.length > 0 ? (
+        {doctors.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {paginatedDoctors.map((doctor) => (
-              <Card key={doctor.id} hoverable className="text-center">
+            {doctors.map((doctor: any) => (
+              <Card key={doctor.doctorId} hoverable className="text-center">
                 <div className="pt-4 px-4 md:pt-6 md:px-6">
                   <div className="w-20 h-20 md:w-28 md:h-28 mx-auto mb-3 md:mb-4 rounded-full overflow-hidden">
                     <img
-                      src={doctor.photo}
-                      alt={doctor.name}
+                      src={doctor.doctorAvatar}
+                      alt={doctor.doctorName}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-1">
-                    {doctor.name}
+                    {doctor.doctorName}
                   </h3>
                   <p className="text-sm md:text-base text-gray-600 mb-2">
-                    {getHospitalName(doctor.hospitalId)}
+                    {doctor.hospitalName || "-"}
                   </p>
                   <p className="text-teal-600 font-semibold mb-2 text-sm md:text-base">
                     {new Intl.NumberFormat("vi-VN").format(
-                      doctor.consultationFee
+                      doctor.doctorPrice || 0
                     )}
                     đ
                   </p>
                   <p className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4 line-clamp-2">
-                    {doctor.specialty}
+                    {doctor.doctorDescription}
                   </p>
                 </div>
                 <div className="px-4 pb-4 md:px-6 md:pb-6">
-                  <Link to={`/doctors/${doctor.id}`}>
+                  <Link to={`/doctors/${doctor.doctorId}`}>
                     <Button fullWidth>Xem chi tiết</Button>
                   </Link>
                 </div>
@@ -168,14 +127,14 @@ const DoctorsPage: React.FC = () => {
           </div>
         )}
 
-        {paginatedDoctors.length > 0 && (
+        {doctors.length > 0 && (
           <div className="flex justify-center mt-6 md:mt-8">
             <Pagination
               current={currentPage}
               total={totalElements}
               pageSize={pageSize}
               showTotal={(total, range) =>
-                `${range[0]}-${range[1]} của ${total} bác sĩ`
+                `${range[0]}-${range[1]} của ${totalElements} bác sĩ`
               }
               onChange={handlePageChange}
               onShowSizeChange={handlePageChange}

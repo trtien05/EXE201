@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Menu, X, User, LogOut, Settings } from "lucide-react";
 import Logo from "../ui/Logo";
-import { verifyToken, User as UserType } from "../../data/mockData";
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  const [currentUser, setCurrentUser] = useState<{
+    name?: string;
+    email?: string;
+    avatar?: string;
+  } | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,19 +25,19 @@ const Header: React.FC = () => {
 
   const checkAuth = () => {
     const token = localStorage.getItem("token");
-    const userStr = localStorage.getItem("user");
-
-    if (token && userStr) {
-      const user = verifyToken(token);
-      if (user) {
+    if (token) {
+      // Try to decode JWT for user info (if available)
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
         setIsAuthenticated(true);
-        setCurrentUser(user);
-      } else {
-        // Token is invalid, clear storage
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setIsAuthenticated(false);
-        setCurrentUser(null);
+        setCurrentUser({
+          name: payload.name || payload.sub || "User",
+          email: payload.email || "",
+          avatar: payload.avatar || "",
+        });
+      } catch {
+        setIsAuthenticated(true);
+        setCurrentUser({ name: "User" });
       }
     } else {
       setIsAuthenticated(false);
@@ -60,7 +63,6 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setCurrentUser(null);
     setShowUserMenu(false);
@@ -115,13 +117,6 @@ const Header: React.FC = () => {
 
           {/* Search and Login buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            <button
-              className="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors duration-200"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5 text-gray-600" />
-            </button>
-
             {isAuthenticated && currentUser ? (
               <div className="relative">
                 <button
