@@ -1,6 +1,6 @@
-import React from 'react';
-import MainLayout from '../components/layout/MainLayout';
-import BookingForm from '../components/Booking/BookingForm';
+import React from "react";
+import MainLayout from "../components/layout/MainLayout";
+import BookingForm from "../components/Booking/BookingForm";
 
 const BookingPage: React.FC = () => {
   return (

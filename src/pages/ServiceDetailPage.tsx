@@ -5,6 +5,7 @@ import ServiceInfo from "../components/ServiceDetail/ServiceInfo";
 import ServiceDoctors from "../components/ServiceDetail/ServiceDoctors";
 import ServiceHospitals from "../components/ServiceDetail/ServiceHospitals";
 import Button from "../components/ui/Button";
+import DoctorTimeSlots from "../components/DoctorDetail/DoctorTimeSlots";
 import { hosservApi } from "../lib/api";
 
 const ServiceDetailPage: React.FC = () => {
@@ -67,6 +68,8 @@ const ServiceDetailPage: React.FC = () => {
           {/* Main content */}
           <div className="lg:w-2/3">
             <ServiceInfo service={service} />
+            <DoctorTimeSlots service={service} />
+
             {/* <ServiceDoctors service={service} /> */}
             <ServiceHospitals service={service} />
           </div>
@@ -94,15 +97,11 @@ const ServiceDetailPage: React.FC = () => {
                       }).format(priceNumber);
                 })()}
               </p>
+
               <p className="text-gray-600 mb-6">
                 Đặt lịch dịch vụ {service.servName} ngay hôm nay để được chăm
                 sóc tốt nhất.
               </p>
-              <Link to={`/booking?serviceId=${service.id}`}>
-                <Button fullWidth size="lg">
-                  Đặt lịch ngay
-                </Button>
-              </Link>
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import HospitalServices from "../components/HospitalDetail/HospitalServices";
 import { useEffect, useState } from "react";
 import { hospitalsApi } from "../lib/api";
 import HospitalDoctors from "../components/HospitalDetail/HospitalDoctors";
+import DoctorTimeSlots from "../components/DoctorDetail/DoctorTimeSlots";
 
 const HospitalDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,7 +39,7 @@ const HospitalDetailPage: React.FC = () => {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-16 text-center">
+        <div className="container mx-auto px-4 py-16 text-center ">
           <p className="text-lg text-gray-600">
             Đang tải thông tin bệnh viện...
           </p>
@@ -80,6 +81,11 @@ const HospitalDetailPage: React.FC = () => {
       id: "doctors",
       label: "Bác sĩ",
       content: <HospitalDoctors hospital={hospital} />,
+    },
+    {
+      id: "booking",
+      label: "Đặt lịch",
+      content: <DoctorTimeSlots hospital={hospital} />,
     },
   ];
 
@@ -173,11 +179,11 @@ const HospitalDetailPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <Link to={`/booking?hospitalId=${hospital.id}`}>
+                {/* <Link to={`/booking?hospitalId=${hospital.id}`}>
                   <Button fullWidth size="lg">
                     Đặt lịch khám
                   </Button>
-                </Link>
+                </Link> */}
               </Card>
             </div>
           </div>

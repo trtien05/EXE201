@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Select } from "antd";
 import {
   User,
@@ -28,47 +28,11 @@ import OvulationCalculator from "../components/ToolsPage/OvulationCalculator";
 import DueDateCalculator from "../components/ToolsPage/DueDateCalculator";
 import PregnancyWeight from "../components/ToolsPage/PregnancyWeight";
 
-// Import the pregnancy calculator components
-
-// Mock data for bookings and transactions
-
-const mockTransactions = [
-  //   {
-  //     id: "TXN001",
-  //     bookingId: "BK1701234567",
-  //     amount: 290000,
-  //     type: "payment",
-  //     method: "MoMo",
-  //     date: "2024-06-16",
-  //     status: "completed",
-  //     description: "Thanh toán phí khám bệnh",
-  //   },
-  {
-    id: "TXN002",
-    bookingId: "BK1701234569",
-    amount: 350000,
-    type: "payment",
-    method: "MoMo",
-    date: "2024-01-09",
-    status: "completed",
-    description: "Thanh toán phí khám bệnh",
-  },
-  {
-    id: "TXN003",
-    bookingId: "BK1701234568",
-    amount: 300000,
-    type: "payment",
-    method: "MoMo",
-    date: "2024-01-19",
-    status: "pending",
-    description: "Thanh toán phí khám bệnh",
-  },
-];
+import BookingHistoryTab from "../components/BookingHistoryTab/BookingHistoryTab";
 
 const ProfilePage: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  // Remove unused userBookings state
   const [bmiData, setBmiData] = useState({
     weight: "",
     height: "",
@@ -102,17 +66,6 @@ const ProfilePage: React.FC = () => {
     };
     fetchProfile();
   }, []);
-
-  // const handleEditSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (currentUser) {
-  //     const updatedUser = { ...currentUser, ...editForm };
-  //     setCurrentUser(updatedUser);
-  //     localStorage.setItem("user", JSON.stringify(updatedUser));
-  //     setIsEditing(false);
-  //     toast.success("Cập nhật thông tin thành công!");
-  //   }
-  // };
 
   const calculateBMI = async () => {
     const weight = parseFloat(bmiData.weight);
@@ -223,15 +176,16 @@ const ProfilePage: React.FC = () => {
     };
   };
 
+  // Update the status badge function to handle new statuses
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      confirmed: { color: "bg-green-100 text-green-800", text: "Đã xác nhận" },
-      pending: { color: "bg-yellow-100 text-yellow-800", text: "Chờ xác nhận" },
-      completed: { color: "bg-blue-100 text-blue-800", text: "Hoàn thành" },
-      cancelled: { color: "bg-red-100 text-red-800", text: "Đã hủy" },
+      CONFIRMED: { color: "bg-green-100 text-green-800", text: "Đã xác nhận" },
+      PENDING: { color: "bg-yellow-100 text-yellow-800", text: "Chờ xác nhận" },
+      COMPLETED: { color: "bg-blue-100 text-blue-800", text: "Hoàn thành" },
+      CANCELLED: { color: "bg-red-100 text-red-800", text: "Đã hủy" },
     };
     const statusInfo =
-      statusMap[status as keyof typeof statusMap] || statusMap.pending;
+      statusMap[status as keyof typeof statusMap] || statusMap.PENDING;
     return (
       <span
         className={`px-2 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}
@@ -240,75 +194,6 @@ const ProfilePage: React.FC = () => {
       </span>
     );
   };
-
-  const getTransactionStatusBadge = (status: string) => {
-    const statusMap = {
-      completed: { color: "bg-green-100 text-green-800", text: "Thành công" },
-      pending: { color: "bg-yellow-100 text-yellow-800", text: "Chờ xử lý" },
-      failed: { color: "bg-red-100 text-red-800", text: "Thất bại" },
-    };
-    const statusInfo =
-      statusMap[status as keyof typeof statusMap] || statusMap.pending;
-    return (
-      <span
-        className={`px-2 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}
-      >
-        {statusInfo.text}
-      </span>
-    );
-  };
-
-  const PersonalInfoTab = () => (
-    <div className="space-y-6">
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-6">
-          Thông tin cá nhân
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ID
-            </label>
-            <p className="text-gray-900">{currentUser?.id}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <p className="text-gray-900">{currentUser?.email}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Trạng thái
-            </label>
-            <p className="text-gray-900">
-              {currentUser?.enabled ? "Đang hoạt động" : "Bị khóa"}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Vai trò
-            </label>
-            <p className="text-gray-900 capitalize">Người dùng</p>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-
-  // BookingHistoryTab is commented out for now
-  /*
-  const BookingHistoryTab = () => {
-    // ...existing code...
-  };
-  */
-
-  // TransactionHistoryTab is commented out for now
-  /*
-  const TransactionHistoryTab = () => (
-    <div>TransactionHistoryTab</div>
-  );
-  */
 
   const BMIHealthTab = () => (
     <div className="space-y-6">
@@ -533,18 +418,6 @@ const ProfilePage: React.FC = () => {
           </p>
         </div>
       </Card>
-      <thead>
-        <tr>
-          <th className="px-4 py-2">Mã đặt khám</th>
-          <th className="px-4 py-2">Bác sĩ</th>
-          <th className="px-4 py-2">Bệnh viện</th>
-          <th className="px-4 py-2">Chuyên khoa</th>
-          <th className="px-4 py-2">Ngày</th>
-          <th className="px-4 py-2">Giờ</th>
-          <th className="px-4 py-2">Trạng thái</th>
-          <th className="px-4 py-2">Phí</th>
-        </tr>
-      </thead>
 
       {/* Health Advice */}
       {bmiData.currentBMI > 0 && (
@@ -706,23 +579,59 @@ const ProfilePage: React.FC = () => {
       </Card>
     </div>
   );
-
+  const PersonalInfoTab = () => (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-6">
+          Thông tin cá nhân
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ID
+            </label>
+            <p className="text-gray-900">{currentUser?.id}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <p className="text-gray-900">{currentUser?.email}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Trạng thái
+            </label>
+            <p className="text-gray-900">
+              {currentUser?.enabled ? "Đang hoạt động" : "Bị khóa"}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Vai trò
+            </label>
+            <p className="text-gray-900 capitalize">Người dùng</p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
   const tabs = [
     {
       id: "personal",
       label: "Thông tin cá nhân",
       content: <PersonalInfoTab />,
     },
-    // {
-    //   id: "bookings",
-    //   label: "Lịch sử đặt khám",
-    //   content: <BookingHistoryTab />,
-    // },
-    // {
-    //   id: "transactions",
-    //   label: "Lịch sử giao dịch",
-    //   content: <TransactionHistoryTab />,
-    // },
+    {
+      id: "bookings",
+      label: "Lịch sử đặt khám",
+      content: (
+        <BookingHistoryTab
+          currentUser={currentUser}
+          getStatusBadge={getStatusBadge}
+        />
+      ),
+    },
     {
       id: "bmi-health",
       label: "Sức khỏe BMI",
@@ -747,6 +656,7 @@ const ProfilePage: React.FC = () => {
       </MainLayout>
     );
   }
+
   if (!currentUser) {
     return (
       <MainLayout>
@@ -768,9 +678,6 @@ const ProfilePage: React.FC = () => {
     <MainLayout>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-52">
-          {/* Header */}
-          {/* No avatar/name header for new API structure */}
-
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="p-6">
@@ -780,7 +687,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-800">
-                    {/* {getBookingsByUserId(currentUser.id).length} */}
+                    0 {/* Set to 0 since we removed orderHistory state */}
                   </p>
                   <p className="text-gray-600">Lịch đặt khám</p>
                 </div>

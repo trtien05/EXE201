@@ -67,7 +67,7 @@ const DoctorDetailPage: React.FC = () => {
           <div className="lg:w-2/3">
             <DoctorInfo doctor={doctor} />
             {/* Optionally pass doctor to DoctorTimeSlots and DoctorReviews if needed */}
-            {/* <DoctorTimeSlots doctor={doctor} /> */}
+            <DoctorTimeSlots doctor={doctor} />
             {/* <DoctorReviews doctor={doctor} /> */}
           </div>
 

@@ -5,7 +5,7 @@ import MainLayout from "../components/layout/MainLayout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import { toast } from "react-toastify";
-
+import stk from "../images/stk.png";
 const CheckoutPaymentPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -20,10 +20,15 @@ const CheckoutPaymentPage: React.FC = () => {
 
   // Payment information
   const paymentInfo = {
-    bankName: "MoMo",
-    accountNumber: "0949442727",
-    accountName: "Ho Tran Tien",
-    transferContent: `Thanh toan lich kham ${bookingId}`,
+    bankName: "BIDV",
+    accountNumber: "5321181932",
+    accountName: "Hoang Bao Ngoc",
+    transferContent: `HovaTen - TenDichVu - ${new Date()
+      .getDate()
+      .toString()
+      .padStart(2, "0")}/${(new Date().getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}/${new Date().getFullYear()} - SENCARE`,
     qrCode:
       "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MOMO_TRANSFER_INFO",
   };
@@ -65,14 +70,9 @@ const CheckoutPaymentPage: React.FC = () => {
           <div className="max-w-2xl mx-auto">
             {/* Header */}
             <div className="flex items-center mb-6">
-              <Button
-                variant="outline"
-                onClick={() => navigate(-1)}
-                className="mr-4"
-              >
+              <button onClick={() => navigate(-1)} className="mr-4">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
-              </Button>
+              </button>
               <h1 className="text-2xl font-bold text-gray-800">
                 Thanh toán đặt lịch khám
               </h1>
@@ -130,7 +130,7 @@ const CheckoutPaymentPage: React.FC = () => {
                     {/* QR Code */}
                     <div className="text-center">
                       <img
-                        src={paymentInfo.qrCode}
+                        src={stk}
                         alt="QR Code"
                         className="mx-auto mb-4 border rounded-lg"
                       />

@@ -228,4 +228,64 @@ export const hospitalsApi = {
   },
 };
 
+// Orders API
+export interface CreateOrderData {
+  servId: string;
+  servUser: string;
+  appointmentTime: string;
+  fullName: string;
+  birthDate: string;
+  gender: string;
+  phone: string;
+  address: string;
+  reason: string;
+  paymentMethod: string;
+}
+
+export interface OrderHistoryItem {
+  orderId: string;
+  servUser: string;
+  servName: string;
+  price: number;
+  appointmentTime: string;
+  fullName: string;
+  birthDate: string;
+  gender: string;
+  phone: string;
+  address: string;
+  reason: string;
+  paymentMethod: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderHistoryResponse {
+  flag: boolean;
+  code: number;
+  message: string;
+  data: OrderHistoryItem[];
+}
+
+export interface OrderResponse {
+  flag: boolean;
+  code: number;
+  message: string;
+  data: {
+    orderId: string;
+    // Add other order fields as needed
+  };
+}
+
+export const ordersApi = {
+  createOrder: async (data: CreateOrderData): Promise<OrderResponse> => {
+    const response = await api.post("/orders", data);
+    return response.data;
+  },
+  getMyOrders: async (): Promise<OrderHistoryResponse> => {
+    const response = await api.get("/orders/me");
+    return response.data;
+  },
+};
+
 export default api;
