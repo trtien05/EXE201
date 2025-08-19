@@ -23,6 +23,8 @@ import ProfilePage from "./pages/ProfilePage";
 import BlogPage from "./pages/BlogPage";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import Chatbot from "./components/ui/Chatbot";
+import AdminLayout from "./components/layout/AdminLayout";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,6 +74,15 @@ function App() {
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/checkout-payment" element={<CheckoutPaymentPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardPage />} />
+            {/* future admin sub-routes */}
+            <Route path="users" element={<div>Users (todo)</div>} />
+            <Route path="bookings" element={<div>Bookings (todo)</div>} />
+            <Route path="hospitals" element={<div>Hospitals (todo)</div>} />
+            <Route path="services" element={<div>Services (todo)</div>} />
+          </Route>
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:id" element={<BlogDetailPage />} />
         </Routes>

@@ -78,23 +78,50 @@ const BookingHistoryTab: React.FC<BookingHistoryTabProps> = ({
     setSelectedNewTimeSlot(timeSlot);
   };
 
-  const handleChangeBookingConfirm = () => {
+  const handleChangeBookingConfirm = async () => {
     if (!selectedNewTimeSlot) {
       toast.warning("Vui lòng chọn khung giờ mới");
       return;
     }
-
-    // TODO: Implement change booking API call with selectedNewTimeSlot
-    toast.info(
-      `Tính năng thay đổi lịch khám đang được phát triển. Khung giờ đã chọn: ${selectedNewTimeSlot}`
-    );
+    if (!selectedOrderId) {
+      toast.error("Không tìm thấy lịch đặt để thay đổi");
+      return;
+    }
+    try {
+      const response = await ordersApi.updateAppointment(selectedOrderId, {
+        appointmentTime: selectedNewTimeSlot,
+      });
+      if (response.flag) {
+        toast.success("Thay đổi lịch khám thành công");
+        loadOrderHistory();
+      } else {
+        toast.error("Không thể thay đổi lịch khám");
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi thay đổi lịch khám");
+    }
     setShowChangeModal(false);
     setSelectedNewTimeSlot("");
   };
 
-  const handleCancelBookingConfirm = () => {
-    // TODO: Implement cancel booking API call
-    toast.info("Tính năng hủy lịch khám đang được phát triển");
+  const handleCancelBookingConfirm = async () => {
+    if (!selectedOrderId) {
+      toast.error("Không tìm thấy lịch đặt để hủy");
+      return;
+    }
+    try {
+      const response = await ordersApi.updateStatus(selectedOrderId, {
+        status: "CANCELLED",
+      });
+      if (response.flag) {
+        toast.success("Hủy lịch khám thành công");
+        loadOrderHistory();
+      } else {
+        toast.error("Không thể hủy lịch khám");
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi hủy lịch khám");
+    }
     setShowCancelModal(false);
   };
 
@@ -104,6 +131,21 @@ const BookingHistoryTab: React.FC<BookingHistoryTabProps> = ({
     setSelectedOrderId(null);
     setSelectedNewTimeSlot("");
   };
+
+  // Find the selected order for modal
+  const selectedOrder = selectedOrderId
+    ? orderHistory.find((order) => order.orderId === selectedOrderId)
+    : null;
+
+  // Filter out current appointment time from slots
+  const filteredMorningSlots =
+    selectedOrder && selectedOrder.appointmentTime
+      ? morningSlots.filter((slot) => slot !== selectedOrder.appointmentTime)
+      : morningSlots;
+  const filteredAfternoonSlots =
+    selectedOrder && selectedOrder.appointmentTime
+      ? afternoonSlots.filter((slot) => slot !== selectedOrder.appointmentTime)
+      : afternoonSlots;
 
   return (
     <div className="space-y-6">
@@ -260,7 +302,7 @@ const BookingHistoryTab: React.FC<BookingHistoryTabProps> = ({
                     🌅 Buổi sáng
                   </h6>
                   <div className="grid grid-cols-1 gap-2">
-                    {morningSlots.map((slot, index) => (
+                    {filteredMorningSlots.map((slot, index) => (
                       <button
                         key={`morning-${index}`}
                         type="button"
@@ -283,7 +325,7 @@ const BookingHistoryTab: React.FC<BookingHistoryTabProps> = ({
                     ☀️ Buổi chiều
                   </h6>
                   <div className="grid grid-cols-1 gap-2">
-                    {afternoonSlots.map((slot, index) => (
+                    {filteredAfternoonSlots.map((slot, index) => (
                       <button
                         key={`afternoon-${index}`}
                         type="button"

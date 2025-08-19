@@ -27,7 +27,7 @@ export interface HospitalServicesResponse {
 }
 import axios from "axios";
 const api = axios.create({
-  baseURL: "https://sencare-server.azurewebsites.net/api/v1",
+  baseURL: "https://ms-sencare.azurewebsites.net/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
@@ -241,6 +241,9 @@ export interface CreateOrderData {
   reason: string;
   paymentMethod: string;
 }
+export interface UpdateOrderData {
+  status: string;
+}
 
 export interface OrderHistoryItem {
   orderId: string;
@@ -284,6 +287,20 @@ export const ordersApi = {
   },
   getMyOrders: async (): Promise<OrderHistoryResponse> => {
     const response = await api.get("/orders/me");
+    return response.data;
+  },
+  updateAppointment: async (
+    orderId: string,
+    data: Partial<CreateOrderData>
+  ): Promise<OrderResponse> => {
+    const response = await api.patch(`/orders/${orderId}/aptm-time`, data);
+    return response.data;
+  },
+  updateStatus: async (
+    orderId: string,
+    data: Partial<UpdateOrderData>
+  ): Promise<OrderResponse> => {
+    const response = await api.patch(`/orders/${orderId}/status`, data);
     return response.data;
   },
 };
