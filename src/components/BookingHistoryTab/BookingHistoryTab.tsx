@@ -31,7 +31,6 @@ const BookingHistoryTab: React.FC<BookingHistoryTabProps> = ({
     setOrderHistoryLoading(true);
     try {
       const response = await ordersApi.getMyOrders();
-      console.log("response", response);
       if (response.flag) {
         setOrderHistory(response.data);
       } else {

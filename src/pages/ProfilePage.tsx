@@ -12,7 +12,7 @@ import MainLayout from "../components/layout/MainLayout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Tabs from "../components/ui/Tabs";
-import { authApi } from "../lib/api";
+import { authApi, ordersApi } from "../lib/api";
 import { toast } from "react-toastify";
 import {
   LineChart,
@@ -40,7 +40,20 @@ const ProfilePage: React.FC = () => {
     history: [] as Array<{ date: string; bmi: number; weight: number }>,
   });
   const [isCalculating, setIsCalculating] = useState(false);
-
+  const [countOrders, setCountOrders] = useState(0);
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      try {
+        const res = await ordersApi.getMyOrders();
+        if (res && res.flag && res.data) {
+          setCountOrders(res.data.length);
+        }
+      } catch (err) {
+        console.error("Error fetching order count:", err);
+      }
+    };
+    fetchOrderCount();
+  }, []);
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
@@ -687,7 +700,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-800">
-                    0 {/* Set to 0 since we removed orderHistory state */}
+                    {countOrders}
                   </p>
                   <p className="text-gray-600">Lịch đặt khám</p>
                 </div>
@@ -700,7 +713,9 @@ const ProfilePage: React.FC = () => {
                   <CreditCard className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-800">0</p>
+                  <p className="text-2xl font-bold text-gray-800">
+                    {countOrders}
+                  </p>
                   <p className="text-gray-600">Giao dịch</p>
                 </div>
               </div>
