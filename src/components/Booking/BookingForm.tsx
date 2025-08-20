@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { User, MapPin, Calendar, Clock } from "lucide-react";
+import { MapPin, Clock } from "lucide-react";
 import Button from "../ui/Button";
 import { toast } from "react-toastify";
 import {
@@ -48,7 +48,7 @@ const BookingForm: React.FC = () => {
   const [selectedService, setSelectedService] =
     useState<HospitalService | null>(null);
   const [loading, setLoading] = useState(true);
-
+  console.log("selectedService", selectedService);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>(
     preSelectedTime || ""
   );
@@ -303,7 +303,7 @@ const BookingForm: React.FC = () => {
 
       // Prepare order data
       const orderData: CreateOrderData = {
-        servId: selectedService?.id || selectedDoctor.doctorId, // Use service ID if available, otherwise doctor ID
+        servId: selectedService?.servId ?? "", // Use service ID if available, otherwise empty string
         servUser: formData.bookingFor === "self" ? "Bản thân" : "Người khác",
         appointmentTime: appointmentTime,
         fullName: formData.patientName,
@@ -698,7 +698,7 @@ const BookingForm: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {services.map((service) => (
               <div
-                key={service.id}
+                key={service.servId}
                 className="border rounded-lg p-3 sm:p-4 cursor-pointer hover:border-blue-500 transition-colors"
                 onClick={() => handleServiceSelect(service)}
               >

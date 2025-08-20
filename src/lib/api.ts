@@ -1,6 +1,6 @@
 // Hospital Services API
 export interface HospitalService {
-  id: string;
+  servId: string;
   servName: string;
   servDesc: string;
   servPrice: string;
