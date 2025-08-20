@@ -44,7 +44,7 @@ export const blogPosts: BlogPost[] = [
     category: "Ứng dụng y tế",
     tags: ["ứng dụng sức khỏe", "AI y tế", "mẹ và bé", "chăm sóc tại nhà"],
     imageUrl:
-      "https://scontent.fsgn8-4.fna.fbcdn.net/v/t39.30808-6/504408397_122108031062891673_3862950004951041225_n.png?_nc_cat=108&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=0wbqvj4S6ukQ7kNvwErQGKH&_nc_oc=AdnVDP-MSsdJuHSd1Wl1A_nrDHT0rDJZz2ZWtC-PKPPrLMfVPCW4uHt50EgqRNRxc9H1Y9T0X1_peMFZc1lPOJ-X&_nc_zt=23&_nc_ht=scontent.fsgn8-4.fna&_nc_gid=XqjqXWbMgKLiP5CgUQQgBQ&oh=00_AfWwHalEfT7NHwduc6shkRsi96yEH-zFPOOBz4On2GgGyA&oe=689E6447",
+      "https://scontent.fsgn8-4.fna.fbcdn.net/v/t39.30808-6/504408397_122108031062891673_3862950004951041225_n.png?_nc_cat=108&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=wMPJWyJ8OlMQ7kNvwFFJmTM&_nc_oc=AdnzBPp8dCSMNgOcEvq0qC86Lf92xezo_PmylMir004NYTksQbe_8d5vq_p5P3-UGydYP5SN3RWwwbhnOwgPSzIB&_nc_zt=23&_nc_ht=scontent.fsgn8-4.fna&_nc_gid=aTNtwTZSj9DykDlWxRa82A&oh=00_AfXotpjiVmeBu8CPRXvuK-NXxJtpDVWx53Do6UlaL9bJPg&oe=68AB9347",
     readTime: "4 phút đọc",
     categoryColor: "bg-blue-100 text-blue-800",
   },
